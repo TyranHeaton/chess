@@ -4,9 +4,13 @@ package chess;
  * Represents moving a chess piece on a chessboard
  * <p>
  * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
+ * the signature of the existing methods.
  */
 public class ChessMove {
+    private ChessPosition start_position;
+    private ChessPosition end_position;
+    private ChessPosition promotion_piece;
+
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
