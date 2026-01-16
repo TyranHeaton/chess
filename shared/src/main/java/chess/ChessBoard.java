@@ -103,7 +103,7 @@ public class ChessBoard {
         return Arrays.deepHashCode(board);
     }
 
-    /*@Override
+    @Override
     public String toString() {
         StringBuilder board_visualization = new StringBuilder();
         for (int row_index = 8; row_index >= 1; row_index--){
@@ -112,11 +112,52 @@ public class ChessBoard {
                 if (piece == null){
                     board_visualization.append("| |");
                 }
-                else {
-                    if piece
-                }
+                if (piece != null) {
+                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
 
+                        if (piece.getPieceType() == ChessPiece.PieceType.PAWN){
+                            board_visualization.append("|P|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.ROOK){
+                            board_visualization.append("|R|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.BISHOP){
+                            board_visualization.append("|B|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                            board_visualization.append("|N|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.KING){
+                            board_visualization.append("|K|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                            board_visualization.append("|Q|");
+                        }
+                    }
+                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        if (piece.getPieceType() == ChessPiece.PieceType.PAWN){
+                            board_visualization.append("|p|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.ROOK){
+                            board_visualization.append("|r|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.BISHOP){
+                            board_visualization.append("|b|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                            board_visualization.append("|n|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.KING){
+                            board_visualization.append("|k|");
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.QUEEN){
+                            board_visualization.append("|q|");
+                        }
+                    }
+                }
             }
+            board_visualization.append("\n");
         }
-    }*/
+        return board_visualization.toString();
+    }
 }
