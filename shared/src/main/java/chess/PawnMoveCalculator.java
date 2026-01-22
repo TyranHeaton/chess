@@ -44,34 +44,36 @@ public class PawnMoveCalculator implements PieceMoveCalculator{
         }
         int targetDiagonalRow = currentRow + direction;
         int targetDiagonalCol = currentCol + 1;
-        ChessPosition diagonalTarget1 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
-        ChessPiece pieceAtDiagonalTarget1 = board.getPiece(diagonalTarget1);
-        if (targetDiagonalRow < 9 && targetDiagonalRow > 0 && targetDiagonalCol < 9 && targetDiagonalCol > 0 && pieceAtDiagonalTarget1 != null){
-            if (targetDiagonalRow == 8 || targetDiagonalRow == 1) {
-                validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.QUEEN));
-                validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.ROOK));
-                validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.BISHOP));
-                validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.KNIGHT));
-            }
-
-            else {
-                validMoves.add(new ChessMove(position, diagonalTarget1, null));
+        if (targetDiagonalRow < 9 && targetDiagonalRow > 0 && targetDiagonalCol < 9 && targetDiagonalCol > 0) {
+            ChessPosition diagonalTarget1 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
+            ChessPiece pieceAtDiagonalTarget1 = board.getPiece(diagonalTarget1);
+            if (pieceAtDiagonalTarget1 != null && pieceAtDiagonalTarget1.getTeamColor() != myColor ) {
+                if (targetDiagonalRow == 8 || targetDiagonalRow == 1) {
+                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.QUEEN));
+                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.ROOK));
+                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.BISHOP));
+                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.KNIGHT));
+                }
+                else {
+                    validMoves.add(new ChessMove(position, diagonalTarget1, null));
+                }
             }
         }
+
         targetDiagonalCol = currentCol - 1;
-        ChessPosition diagonalTarget2 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
-        ChessPiece pieceAtDiagonalTarget2 = board.getPiece(diagonalTarget2);
-        if (targetDiagonalRow < 9 && targetDiagonalRow > 0 && targetDiagonalCol < 9 && targetDiagonalCol > 0 && pieceAtDiagonalTarget2 != null){
-            if (targetDiagonalRow == 8 || targetDiagonalRow == 1) {
-                validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.QUEEN));
-                validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.ROOK));
-                validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.BISHOP));
-                validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.KNIGHT));
+        if (targetDiagonalRow < 9 && targetDiagonalRow > 0 && targetDiagonalCol < 9 && targetDiagonalCol > 0) {
+            ChessPosition diagonalTarget2 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
+            ChessPiece pieceAtDiagonalTarget2 = board.getPiece(diagonalTarget2);
+            if (pieceAtDiagonalTarget2 != null && pieceAtDiagonalTarget2.getTeamColor() != myColor) {
+                if (targetDiagonalRow == 8 || targetDiagonalRow == 1) {
+                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.QUEEN));
+                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.ROOK));
+                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.BISHOP));
+                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.KNIGHT));
+                } else {
+                    validMoves.add(new ChessMove(position, diagonalTarget2, null));
+                }
             }
-
-            else {
-                validMoves.add(new ChessMove(position, diagonalTarget2, null));
-        }
         }
         return validMoves;
     }
