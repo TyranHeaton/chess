@@ -58,6 +58,9 @@ public class ChessPiece {
             case KNIGHT:
                 KnightMoveCalculator knightMoves = new KnightMoveCalculator();
                 return knightMoves.calculateMoves(board, myPosition);
+            case ROOK:
+                RookMoveCalculator rookMoves = new RookMoveCalculator();
+                return rookMoves.calculateMoves(board, myPosition);
 
         }
         throw new RuntimeException("Not implemented");
