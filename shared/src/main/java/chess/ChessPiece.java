@@ -73,9 +73,8 @@ public class ChessPiece {
             case KING:
                 KingMoveCalculator kingMoves = new KingMoveCalculator();
                 return kingMoves.calculateMoves(board, myPosition);
-
+            default: throw new RuntimeException("Unknown piece type: " + type);
         }
-        throw new RuntimeException("Not implemented");
     }
 
     @Override
