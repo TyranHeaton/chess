@@ -7,7 +7,7 @@ import java.util.Objects;
  * Represents a single chess piece
  * <p>
  * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
+ * the signature of the existing methods.
  */
 public class ChessPiece {
     private final ChessGame.TeamColor teamColor;
@@ -67,6 +67,9 @@ public class ChessPiece {
             case QUEEN:
                 QueenMoveCalculator queenMoves = new QueenMoveCalculator();
                 return queenMoves.calculateMoves(board,myPosition);
+            case PAWN:
+                PawnMoveCalculator pawnMoves = new PawnMoveCalculator();
+                return pawnMoves.calculateMoves(board, myPosition);
 
         }
         throw new RuntimeException("Not implemented");
