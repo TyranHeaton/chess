@@ -64,6 +64,9 @@ public class ChessPiece {
             case BISHOP:
                 BishopMoveCalculator bishopMoves = new BishopMoveCalculator();
                 return bishopMoves.calculateMoves(board, myPosition);
+            case QUEEN:
+                QueenMoveCalculator queenMoves = new QueenMoveCalculator();
+                return queenMoves.calculateMoves(board,myPosition);
 
         }
         throw new RuntimeException("Not implemented");
