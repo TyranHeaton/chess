@@ -70,6 +70,9 @@ public class ChessPiece {
             case PAWN:
                 PawnMoveCalculator pawnMoves = new PawnMoveCalculator();
                 return pawnMoves.calculateMoves(board, myPosition);
+            case KING:
+                KingMoveCalculator kingMoves = new KingMoveCalculator();
+                return kingMoves.calculateMoves(board, myPosition);
 
         }
         throw new RuntimeException("Not implemented");
