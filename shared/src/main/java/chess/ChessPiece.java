@@ -10,8 +10,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private ChessGame.TeamColor teamColor;
-    private ChessPiece.PieceType type;
+    private final ChessGame.TeamColor teamColor;
+    private final ChessPiece.PieceType type;
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
@@ -61,6 +61,9 @@ public class ChessPiece {
             case ROOK:
                 RookMoveCalculator rookMoves = new RookMoveCalculator();
                 return rookMoves.calculateMoves(board, myPosition);
+            case BISHOP:
+                BishopMoveCalculator bishopMoves = new BishopMoveCalculator();
+                return bishopMoves.calculateMoves(board, myPosition);
 
         }
         throw new RuntimeException("Not implemented");
