@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -10,6 +11,7 @@ import java.util.Collection;
  */
 public class ChessGame {
     private ChessBoard board;
+    private ChessGame.TeamColor teamTurn;
 
 
     public ChessGame() {
@@ -20,7 +22,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.teamTurn;
     }
 
     /**
@@ -48,7 +50,24 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessBoard currentBoard = getBoard();
+        ChessPiece piece = currentBoard.getPiece(startPosition);
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(currentBoard, startPosition);
+        for (ChessMove move : possibleMoves){
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            ChessPiece capturedPiece = currentBoard.getPiece(end);
+            ChessPiece movingPiece = currentBoard.getPiece(start);
+            currentBoard.addPiece(end, movingPiece);
+            currentBoard.addPiece(start, null);
+            if (!isInCheck(piece.getTeamColor())){
+                validMoves.add(move);
+            }
+            currentBoard.addPiece(end, capturedPiece);
+            currentBoard.addPiece(start, movingPiece);
+        }
+        return validMoves;
     }
 
     /**
@@ -58,6 +77,9 @@ public class ChessGame {
      * @throws InvalidMoveException if the move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece piece = board.getPiece(start);
         throw new RuntimeException("Not implemented");
     }
 
