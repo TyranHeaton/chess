@@ -20,6 +20,11 @@ public class ChessPiece {
 
     }
 
+    @Override
+    public String toString() {
+        return teamColor + " " + type;
+    }
+
     /**
      * The various different chess piece options
      */
