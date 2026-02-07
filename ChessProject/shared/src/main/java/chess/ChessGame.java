@@ -47,7 +47,6 @@ public class ChessGame {
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn;
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(board, teamTurn);
