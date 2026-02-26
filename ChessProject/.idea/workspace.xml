@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="85bc94b0-0562-4847-8983-f908ab95d730" name="Changes" comment="Modifying file to allow for another autograding submission." />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/tyran/OneDrive/Desktop/CS240/ChessProject" value="3801CVWNn1taykHmDdMljLKxK5s" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="81" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;TyranHeaton&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/TyranHeaton/chess.git&quot;,
+    &quot;accountId&quot;: &quot;57e58e5e-1ef3-4a1a-bd61-2ba6079c97c4&quot;
+  }
+}</component>
+  <component name="LLMProjectSettings">
+    <option name="turned_on" value="false" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="3801CVWNn1taykHmDdMljLKxK5s" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.BishopMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChessBoardTests and 3 more.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChessBoardTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChessGameTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChessMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChessPieceTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChessPositionTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.FullGameTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameStatusTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameStatusTests.noGameStatuses.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.IsInCheckMethodTest.rookPutKingInCheck.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.IsInCheckMethodTest.testEssentialCases.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.KingMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.KnightMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.KnightMoveTests.knightMiddleOfBoardWhite.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.MakeMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.MakeMoveTests.invalidMakeMoveNoPiece.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.MakeMoveTests.invalidMakeMoveOutOfTurn.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.MakeMoveTests.makeMoveChangesTurn.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.MakeMoveTests.makeValidKingMove.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.MakeMoveTests.makeValidQueenMove.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.MakeMoveTests.promotionMoves.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.PawnMoveTests.captureAndPromoteBlack.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.PawnMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.PawnMoveTests.pawnCaptureWhite.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.PawnMoveTests.pawnMiddleOfBoardWhite.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.PawnMoveTests.pawnMoveFromEdgeBlack.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.QueenMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RookMoveTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesMethodTest.captureToEscapeCheck.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesMethodTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesMethodTest.kingCantMoveIntoCheck.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesMethodTest.mustEscapeCheck.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesMethodTest.pawnPromotionTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesMethodTest.testPinnedPiece.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ValidMovesTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.chess in shared.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.passoff.chess in shared.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/tyran/OneDrive/Desktop/CS240/ChessProject&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="JUnit.chess in shared">
+    <configuration name="ChessGameTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.chess.game.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.chess.game" />
+      <option name="MAIN_CLASS_NAME" value="passoff.chess.game.ChessGameTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FullGameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.chess.game.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.chess.game" />
+      <option name="MAIN_CLASS_NAME" value="passoff.chess.game.FullGameTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameStatusTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.chess.game.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.chess.game" />
+      <option name="MAIN_CLASS_NAME" value="passoff.chess.game.GameStatusTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameStatusTests.noGameStatuses" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="passoff.chess.game.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="passoff.chess.game" />
+      <option name="MAIN_CLASS_NAME" value="passoff.chess.game.GameStatusTests" />
+      <option name="METHOD_NAME" value="noGameStatuses" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="chess in shared" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="shared" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/shared/src/test/java/passoff/chess" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.chess in shared" />
+        <item itemvalue="JUnit.GameStatusTests" />
+        <item itemvalue="JUnit.FullGameTest" />
+        <item itemvalue="JUnit.ChessGameTests" />
+        <item itemvalue="JUnit.GameStatusTests.noGameStatuses" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.29346.240" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="85bc94b0-0562-4847-8983-f908ab95d730" name="Changes" comment="" />
+      <created>1767921553260</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1767921553260</updated>
+      <workItem from="1767921593455" duration="5416000" />
+      <workItem from="1768085261741" duration="66000" />
+      <workItem from="1768085406833" duration="321000" />
+      <workItem from="1768168371376" duration="3969000" />
+      <workItem from="1768257845384" duration="6770000" />
+      <workItem from="1768370785622" duration="1937000" />
+      <workItem from="1768511501581" duration="16361000" />
+      <workItem from="1768889436264" duration="1917000" />
+      <workItem from="1768932976411" duration="10704000" />
+      <workItem from="1768977523279" duration="12389000" />
+      <workItem from="1769063495848" duration="9693000" />
+      <workItem from="1769123156499" duration="2798000" />
+      <workItem from="1769454302579" duration="1699000" />
+      <workItem from="1769456600083" duration="5782000" />
+      <workItem from="1769465777066" duration="233000" />
+      <workItem from="1769466098007" duration="945000" />
+      <workItem from="1769467296531" duration="4815000" />
+      <workItem from="1769892784498" duration="8815000" />
+      <workItem from="1770159867146" duration="39615000" />
+      <workItem from="1770435579743" duration="722000" />
+    </task>
+    <task id="LOCAL-00001" summary="notes.md file">
+      <option name="closed" value="true" />
+      <created>1767922052152</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1767922052152</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Initial logic for ChessPosition module.">
+      <option name="closed" value="true" />
+      <created>1768002656526</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1768002656526</updated>
+    </task>
+    <task id="LOCAL-00003" summary="All 3 tests now pass for the ChessPosition module.">
+      <option name="closed" value="true" />
+      <created>1768173036813</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1768173036813</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Begin implementing ChessMove.java&#10;Define variables using the ChessPosition class within the ChessMove class.">
+      <option name="closed" value="true" />
+      <created>1768259931113</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1768259931113</updated>
+    </task>
+    <task id="LOCAL-00005" summary="ChessMove tests pass.">
+      <option name="closed" value="true" />
+      <created>1768283588611</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1768283588611</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Beginning logic for ChessBoard.">
+      <option name="closed" value="true" />
+      <created>1768372686992</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1768372686992</updated>
+    </task>
+    <task id="LOCAL-00007" summary="ChessBoard class continuing.">
+      <option name="closed" value="true" />
+      <created>1768536894690</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1768536894690</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Completion of ChessBoard class and initialization of ChessPiece class.">
+      <option name="closed" value="true" />
+      <created>1768545041583</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1768545041583</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Completion of KnightMove logic.">
+      <option name="closed" value="true" />
+      <created>1768945915488</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1768945915488</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Begin RookMoveCalculator logic.">
+      <option name="closed" value="true" />
+      <created>1768978122806</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1768978122806</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Complete Rook Moves.">
+      <option name="closed" value="true" />
+      <created>1769045559358</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769045559358</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Complete Bishop Moves.">
+      <option name="closed" value="true" />
+      <created>1769047365474</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1769047365474</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Complete Queen Moves.">
+      <option name="closed" value="true" />
+      <created>1769051846308</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1769051846308</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Clean code.">
+      <option name="closed" value="true" />
+      <created>1769052781562</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1769052781562</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Begin Pawn Moves Implementation.">
+      <option name="closed" value="true" />
+      <created>1769064990408</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1769064990408</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Most PawnMove tests pass.">
+      <option name="closed" value="true" />
+      <created>1769072906963</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1769072906963</updated>
+    </task>
+    <task id="LOCAL-00017" summary="All PawnMoveTests pass.">
+      <option name="closed" value="true" />
+      <created>1769074110906</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1769074110906</updated>
+    </task>
+    <task id="LOCAL-00018" summary="KingMoves completed.">
+      <option name="closed" value="true" />
+      <created>1769124516637</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1769124516637</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Complete ChessPiece class.">
+      <option name="closed" value="true" />
+      <created>1769125597974</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1769125597974</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Initial Commit for Phase 1.">
+      <option name="closed" value="true" />
+      <created>1769893100744</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1769893100744</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Second commit for Phase 1.">
+      <option name="closed" value="true" />
+      <created>1769893289165</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1769893289165</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Third commit for Phase 1.">
+      <option name="closed" value="true" />
+      <created>1769893508649</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1769893508649</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Commit 4 (Phase 1)">
+      <option name="closed" value="true" />
+      <created>1770075425448</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1770075425448</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Commit 5 (Phase 1)">
+      <option name="closed" value="true" />
+      <created>1770161180741</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1770161180742</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Commit 6 (Phase 1)">
+      <option name="closed" value="true" />
+      <created>1770248076180</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1770248076180</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Commit 7 (Phase 1)">
+      <option name="closed" value="true" />
+      <created>1770361149037</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1770361149041</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Commit 8 (Phase 1) (All Tests Pass!)">
+      <option name="closed" value="true" />
+      <created>1770428619777</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1770428619777</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Modifying file to allow for another autograding submission.">
+      <option name="closed" value="true" />
+      <created>1770429234655</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1770429234655</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Modifying file to allow for another autograding submission.">
+      <option name="closed" value="true" />
+      <created>1770429337718</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1770429337718</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Modifying file to allow for another autograding submission.">
+      <option name="closed" value="true" />
+      <created>1770429414467</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1770429414467</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Begin implementing ChessMove.java&#10;Define variables using the ChessPosition class within the ChessMove class." />
+    <MESSAGE value="ChessMove tests pass." />
+    <MESSAGE value="Beginning logic for ChessBoard." />
+    <MESSAGE value="ChessBoard class continuing." />
+    <MESSAGE value="Completion of ChessBoard class and initialization of ChessPiece class." />
+    <MESSAGE value="Completion of KnightMove logic." />
+    <MESSAGE value="Begin RookMoveCalculator logic." />
+    <MESSAGE value="Complete Rook Moves." />
+    <MESSAGE value="Complete Bishop Moves." />
+    <MESSAGE value="Complete Queen Moves." />
+    <MESSAGE value="Clean code." />
+    <MESSAGE value="Begin Pawn Moves Implementation." />
+    <MESSAGE value="Most PawnMove tests pass." />
+    <MESSAGE value="All PawnMoveTests pass." />
+    <MESSAGE value="KingMoves completed." />
+    <MESSAGE value="Complete ChessPiece class." />
+    <MESSAGE value="Initial Commit for Phase 1." />
+    <MESSAGE value="Second commit for Phase 1." />
+    <MESSAGE value="Third commit for Phase 1." />
+    <MESSAGE value="Commit 4 (Phase 1)" />
+    <MESSAGE value="Commit 5 (Phase 1)" />
+    <MESSAGE value="Commit 6 (Phase 1)" />
+    <MESSAGE value="Commit 7 (Phase 1)" />
+    <MESSAGE value="Commit 8 (Phase 1) (All Tests Pass!)" />
+    <MESSAGE value="Modifying file to allow for another autograding submission." />
+    <option name="LAST_COMMIT_MESSAGE" value="Modifying file to allow for another autograding submission." />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
