@@ -19,21 +19,22 @@ public class UserService {
         if (newUserData.username() == null || newUserData.password() == null || newUserData.email() == null) {
             throw new DataAccessException("Error: bad request");
         }
-        if (userDatabase.get(newUserData.username()) != null) {
+        if (userDatabase.get(newUserData.username()) != null) { //getUser
             throw new DataAccessException("Error: username already exists");
         }
-        userDatabase.insert(newUserData);
+
+        userDatabase.insert(newUserData); // createUser
         return login(newUserData.username(), newUserData.password());
     }
 
     public AuthData login(String username, String password) throws DataAccessException {
-        UserData user = userDatabase.get(username);
+        UserData user = userDatabase.get(username); // getUser
         if (user == null || !user.password().equals(password)) {
             throw new DataAccessException("Error: unauthorized"); // 401
         }
         String token = UUID.randomUUID().toString();
         AuthData authData = new AuthData(token, username);
-        authDatabase.insert(authData);
+        authDatabase.insert(authData); // createAuth
 
         return authData;
     }
@@ -42,7 +43,7 @@ public class UserService {
         if (authDatabase.get(token) == null) {
             throw new DataAccessException("Error: unauthorized"); // 401
         }
-        authDatabase.delete(token);
+        authDatabase.delete(token); // deleteAuth
     }
 
 }
