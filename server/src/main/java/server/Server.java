@@ -6,8 +6,13 @@ import io.javalin.http.Context;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import server.handlers.ClearHandler;
+import server.handlers.GameHandler;
+import server.handlers.UserHandler;
 import service.ClearService;
 import server.ErrorResponse;
+import service.GameService;
+import service.UserService;
 
 public class Server {
     private final Javalin javalin;
@@ -15,13 +20,26 @@ public class Server {
 
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
         UserDAO userDAO = new UserDAO();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();
-        clearService = new ClearService(userDAO, gameDAO, authDAO);
-        javalin.delete("/db", this::handleClearDatabase);
+
+        UserService userService = new UserService(userDAO, authDAO);
+        GameService gameService = new GameService(gameDAO, authDAO);
+        ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
+
+        UserHandler userHandler = new UserHandler(userService);
+        GameHandler gameHandler = new GameHandler(gameService);
+        ClearHandler clearHandler = new ClearHandler(clearService);
+
+        // Create javalin instance
+        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+
         // Register your endpoints and exception handlers here.
+        javalin.delete("/db", this::handleClearDatabase);
+
+        // TODO: Finish registering endpoints
+
 
     }
     public void handleClearDatabase(Context ctx){
