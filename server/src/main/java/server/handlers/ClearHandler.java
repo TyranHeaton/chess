@@ -2,6 +2,7 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import exceptions.DataAccessException;
+import exceptions.UnauthorizedException;
 import service.ClearService;
 import io.javalin.http.Context;
 
@@ -15,15 +16,14 @@ public class ClearHandler {
 
     }
 
-    public void clear(Context ctx) {
+    public void clear(Context ctx) throws DataAccessException {
         try {
             clearService.clear();
             ctx.status(200);
-            ctx.result("{}");
-
+            ctx.result("{}"); // Success requires an empty JSON object
         } catch (DataAccessException e) {
             ctx.status(500);
-            ctx.json(e.getMessage());
         }
+
     }
 }

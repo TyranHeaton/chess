@@ -4,6 +4,8 @@ import dataaccess.AuthDAO;
 import exceptions.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import exceptions.UnauthorizedException;
+import model.AuthData;
 
 public class ClearService {
     private final UserDAO userDAO;

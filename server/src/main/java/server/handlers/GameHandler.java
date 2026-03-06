@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import exceptions.UnauthorizedException;
@@ -20,7 +21,7 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
-    public void listGames(Context ctx) throws DataAccessException {
+    public void listGames(Context ctx) throws DataAccessException, UnauthorizedException {
         String authToken = ctx.header("Authorization");
         var games = gameService.listGames(authToken);
         String jsonResponse = gson.toJson(new ListGamesResult(games));
@@ -37,16 +38,12 @@ public class GameHandler {
         ctx.result(gson.toJson(new CreateGameResult(gameID)));
     }
 
-    public void joinGame(Context ctx) {
+    public void joinGame(Context ctx) throws DataAccessException, UnauthorizedException, BadRequestException, AlreadyTakenException {
         String authToken = ctx.header("Authorization");
-        JoinGameRequest req = ctx.bodyAsClass(JoinGameRequest.class);
-        try {
-            gameService.joinGame(authToken, req.playerColor(), req.gameId());
-            ctx.status(200);
-            ctx.json(java.util.Map.of());
-        } catch (Exception e) {
-            ctx.status(403);
-            ctx.json(new ErrorResult("Error: " + e.getMessage()));
-        }
+        JoinGameRequest req = gson.fromJson(ctx.body(), JoinGameRequest.class);
+        gameService.joinGame(authToken, req.playerColor(), req.gameID());
+        ctx.status(200);
+        ctx.result("{}");
+
     }
 }

@@ -5,7 +5,6 @@ import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import exceptions.UnauthorizedException;
 import io.javalin.Javalin;
-import io.javalin.http.Context;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -44,7 +43,7 @@ public class Server {
         javalin.post("/game", gameHandler::createGame);
         javalin.put("/game", gameHandler::joinGame);
 
-        javalin.delete("/db", this::handleClearDatabase);
+        javalin.delete("/db", clearHandler::clear);
 
         registerExceptions();
     }
@@ -73,15 +72,6 @@ public class Server {
             ctx.status(500);
             ctx.result(new Gson().toJson(new ErrorResponse("Error: " + e.getMessage())));
         });
-    }
-
-    public void handleClearDatabase(Context ctx){
-        try {
-            clearService.clear();
-            ctx.status(200).json(new Object());
-        } catch (DataAccessException e) {
-            ctx.status(500).json(new ErrorResponse("Error: " + e.getMessage()));
-        }
     }
 
     public int run(int desiredPort) {

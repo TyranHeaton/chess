@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import dataaccess.GameDAO;
@@ -21,10 +22,10 @@ public class GameService {
         this.authDatabase = authDatabase;
     }
 
-    public Collection<GameData> listGames(String authToken) throws DataAccessException {
+    public Collection<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedException {
         AuthData authData = authDatabase.get(authToken);
         if (authData == null) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         return gameDatabase.listGames();
     }
@@ -38,33 +39,39 @@ public class GameService {
             throw new UnauthorizedException();
         }
         int gameID = new Random().nextInt(1000000); // Generate a random game ID
-        GameData newGame = new GameData(gameID, gameName, null, null, new ChessGame());
+        GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
         gameDatabase.insert(newGame);
         return gameID;
     }
 
-    public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+    public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException, UnauthorizedException, AlreadyTakenException, BadRequestException {
         AuthData auth = authDatabase.get(authToken);
         if (auth == null) {
-            throw new DataAccessException("Error: unauthorized"); // 401
+            throw new UnauthorizedException(); // 401
         }
         String username = auth.username();
         GameData game = gameDatabase.get(String.valueOf(gameID));
         if (game == null) {
-            throw new DataAccessException("Error: game not found"); // 404
+            throw new BadRequestException();
         }
 
         String whiteUser = game.whiteUsername();
         String blackUser = game.blackUsername();
 
-        if (playerColor.equals("WHITE")) {
-            if (whiteUser != null) throw new DataAccessException("Error: already taken"); // 403
+        if (playerColor == null || playerColor.isEmpty()) {
+            throw new BadRequestException(); // 400
+        }
+
+        String colorUpper = playerColor.toUpperCase();
+        if (colorUpper.equals("WHITE")) {
+            if (game.whiteUsername() != null) throw new AlreadyTakenException();
             whiteUser = username;
-        } else if (playerColor.equals("BLACK")) {
-            if (blackUser != null) throw new DataAccessException("Error: already taken"); // 403
+        } else if (colorUpper.equals("BLACK")) {
+            if (game.blackUsername() != null) throw new AlreadyTakenException();
             blackUser = username;
         } else {
-            throw new DataAccessException("Error: bad request"); // Invalid color
+            // 3. This catches "GREEN" or any other invalid color
+            throw new BadRequestException(); // 400
         }
 
         GameData updatedGame = new GameData(
