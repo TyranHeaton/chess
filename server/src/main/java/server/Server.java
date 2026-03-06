@@ -1,6 +1,9 @@
 package server;
-import dataaccess.DataAccessException;
-import io.javalin.*;
+import com.google.gson.Gson;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
+import exceptions.UnauthorizedException;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import dataaccess.AuthDAO;
@@ -10,13 +13,12 @@ import server.handlers.ClearHandler;
 import server.handlers.GameHandler;
 import server.handlers.UserHandler;
 import service.ClearService;
-import server.ErrorResponse;
 import service.GameService;
 import service.UserService;
 
 public class Server {
     private final Javalin javalin;
-    private ClearService clearService;
+    private final ClearService clearService;
 
 
     public Server() {
@@ -26,22 +28,53 @@ public class Server {
 
         UserService userService = new UserService(userDAO, authDAO);
         GameService gameService = new GameService(gameDAO, authDAO);
-        ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
+        this.clearService = new ClearService(userDAO, gameDAO, authDAO);
 
         UserHandler userHandler = new UserHandler(userService);
         GameHandler gameHandler = new GameHandler(gameService);
-        ClearHandler clearHandler = new ClearHandler(clearService);
+        ClearHandler clearHandler = new ClearHandler(this.clearService);
 
-        // Create javalin instance
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        // Register your endpoints and exception handlers here.
+        javalin.post("/user", userHandler::register);
+        javalin.post("/session", userHandler::login);
+        javalin.delete("/session", userHandler::logout);
+
+        javalin.get("/game", gameHandler::listGames);
+        javalin.post("/game", gameHandler::createGame);
+        javalin.put("/game", gameHandler::joinGame);
+
         javalin.delete("/db", this::handleClearDatabase);
 
-        // TODO: Finish registering endpoints
-
-
+        registerExceptions();
     }
+
+    private void registerExceptions() {
+        // 401: Unauthorized (Bad password or bad token)
+        javalin.exception(UnauthorizedException.class, (e, ctx) -> {
+            ctx.status(401);
+            ctx.result(new Gson().toJson(new ErrorResponse("Error: Unauthorized")));
+        });
+
+        // 400: Bad Request (Missing fields or invalid color)
+        javalin.exception(BadRequestException.class, (e, ctx) -> {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(new ErrorResponse("Error: bad request")));
+        });
+
+        // 403: Already Taken (Username exists or color is full)
+        javalin.exception(AlreadyTakenException.class, (e, ctx) -> {
+            ctx.status(403);
+            ctx.result(new Gson().toJson(new ErrorResponse("Error: already taken")));
+        });
+
+        // 500: Database Failure
+        javalin.exception(DataAccessException.class, (e, ctx) -> {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(new ErrorResponse("Error: " + e.getMessage())));
+        });
+    }
+
     public void handleClearDatabase(Context ctx){
         try {
             clearService.clear();

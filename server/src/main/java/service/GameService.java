@@ -2,8 +2,10 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
 import dataaccess.GameDAO;
+import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 
@@ -27,10 +29,13 @@ public class GameService {
         return gameDatabase.listGames();
     }
 
-    public int createGame(String authToken, String gameName) throws DataAccessException {
+    public int createGame(String authToken, String gameName) throws DataAccessException, UnauthorizedException, BadRequestException {
         AuthData authData = authDatabase.get(authToken);
+        if (gameName == null || gameName.isEmpty()) {
+            throw new BadRequestException();
+        }
         if (authData == null) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         int gameID = new Random().nextInt(1000000); // Generate a random game ID
         GameData newGame = new GameData(gameID, gameName, null, null, new ChessGame());

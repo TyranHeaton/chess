@@ -1,6 +1,6 @@
 package dataaccess;
 
-import model.AuthData;
+import exceptions.DataAccessException;
 import model.GameData;
 
 import java.util.Collection;

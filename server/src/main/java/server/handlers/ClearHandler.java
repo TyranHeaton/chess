@@ -1,12 +1,14 @@
 package server.handlers;
 
-import dataaccess.DataAccessException;
+import com.google.gson.Gson;
+import exceptions.DataAccessException;
 import service.ClearService;
 import io.javalin.http.Context;
 
 
 public class ClearHandler {
     private final ClearService clearService;
+    private final Gson gson = new Gson();
 
     public ClearHandler(ClearService clearService) {
         this.clearService = clearService;
