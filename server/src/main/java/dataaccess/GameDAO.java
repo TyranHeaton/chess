@@ -17,8 +17,8 @@ public class GameDAO implements DataAccess<GameData>{
 
     @Override
     public void delete(String gameID) throws DataAccessException {
-        int ID = Integer.parseInt(gameID);
-        games.remove(ID);
+        int id = Integer.parseInt(gameID);
+        games.remove(id);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class GameDAO implements DataAccess<GameData>{
 
     @Override
     public GameData get(String gameID) throws DataAccessException {
-        int ID = Integer.parseInt(gameID);
-        return games.get(ID);
+        int id = Integer.parseInt(gameID);
+        return games.get(id);
     }
 
     public Collection<GameData> listGames() throws DataAccessException{

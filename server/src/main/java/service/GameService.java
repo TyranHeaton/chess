@@ -64,10 +64,14 @@ public class GameService {
 
         String colorUpper = playerColor.toUpperCase();
         if (colorUpper.equals("WHITE")) {
-            if (game.whiteUsername() != null) throw new AlreadyTakenException();
+            if (game.whiteUsername() != null) {
+                throw new AlreadyTakenException();
+            }
             whiteUser = username;
         } else if (colorUpper.equals("BLACK")) {
-            if (game.blackUsername() != null) throw new AlreadyTakenException();
+            if (game.blackUsername() != null) {
+                throw new AlreadyTakenException();
+            }
             blackUser = username;
         } else {
             // 3. This catches "GREEN" or any other invalid color

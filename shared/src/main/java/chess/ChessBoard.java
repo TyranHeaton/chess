@@ -53,9 +53,9 @@ public class ChessBoard {
     public void resetBoard() {
         this.board = new ChessPiece[8][8];
         //Set up white and black pawns
-        for (int column_index = 1; column_index <= 8; column_index++) {
-            addPiece(new ChessPosition(2, column_index), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-            addPiece(new ChessPosition(7, column_index), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        for (int columnIndex = 1; columnIndex <= 8; columnIndex++) {
+            addPiece(new ChessPosition(2, columnIndex), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            addPiece(new ChessPosition(7, columnIndex), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
         //Set up white rooks
         addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
@@ -105,59 +105,38 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        StringBuilder board_visualization = new StringBuilder();
-        for (int row_index = 8; row_index >= 1; row_index--){
-            for (int col_index = 1; col_index <= 8; col_index++){
-                ChessPiece piece = getPiece(new ChessPosition(row_index, col_index));
+        StringBuilder boardVisualization = new StringBuilder();
+        for (int rowIndex = 8; rowIndex >= 1; rowIndex--){
+            for (int colIndex = 1; colIndex <= 8; colIndex++){
+                ChessPiece piece = getPiece(new ChessPosition(rowIndex, colIndex));
                 if (piece == null){
-                    board_visualization.append("| |");
-                }
-                if (piece != null) {
-                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
-
-                        if (piece.getPieceType() == ChessPiece.PieceType.PAWN){
-                            board_visualization.append("|P|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.ROOK){
-                            board_visualization.append("|R|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.BISHOP){
-                            board_visualization.append("|B|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                            board_visualization.append("|N|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.KING){
-                            board_visualization.append("|K|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                            board_visualization.append("|Q|");
-                        }
-                    }
-                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                        if (piece.getPieceType() == ChessPiece.PieceType.PAWN){
-                            board_visualization.append("|p|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.ROOK){
-                            board_visualization.append("|r|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.BISHOP){
-                            board_visualization.append("|b|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                            board_visualization.append("|n|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.KING){
-                            board_visualization.append("|k|");
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.QUEEN){
-                            board_visualization.append("|q|");
-                        }
-                    }
+                    boardVisualization.append("| |");
+                } else {
+                    boardVisualization.append(getPieceSymbol(piece));
                 }
             }
-            board_visualization.append("\n");
+            boardVisualization.append("\n");
         }
-        return board_visualization.toString();
+        return boardVisualization.toString();
+    }
+
+    private String getPieceSymbol(ChessPiece piece) {
+        boolean isWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;
+        switch (piece.getPieceType()) {
+            case PAWN:
+                return isWhite ? "|P|" : "|p|";
+            case ROOK:
+                return isWhite ? "|R|" : "|r|";
+            case BISHOP:
+                return isWhite ? "|B|" : "|b|";
+            case KNIGHT:
+                return isWhite ? "|N|" : "|n|";
+            case KING:
+                return isWhite ? "|K|" : "|k|";
+            case QUEEN:
+                return isWhite ? "|Q|" : "|q|";
+            default:
+                return "| |";
+        }
     }
 }

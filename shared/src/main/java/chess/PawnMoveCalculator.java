@@ -17,15 +17,7 @@ public class PawnMoveCalculator implements PieceMoveCalculator{
             ChessPosition targetPosition = new ChessPosition(targetRow, currentCol);
             ChessPiece pieceAtTarget = board.getPiece(targetPosition);
             if (pieceAtTarget == null) {
-                if (targetRow == 1 || targetRow == 8) {
-                    validMoves.add(new ChessMove(position, targetPosition, ChessPiece.PieceType.QUEEN));
-                    validMoves.add(new ChessMove(position, targetPosition, ChessPiece.PieceType.ROOK));
-                    validMoves.add(new ChessMove(position, targetPosition, ChessPiece.PieceType.BISHOP));
-                    validMoves.add(new ChessMove(position, targetPosition, ChessPiece.PieceType.KNIGHT));
-                }
-                else {
-                    validMoves.add(new ChessMove(position, targetPosition, null));
-                }
+                addMoveOrPromotions(position, targetPosition, targetRow, validMoves);
                 if (currentRow == 2 && myColor == ChessGame.TeamColor.WHITE) {
                     int twoStepCheck = currentRow + (2 * direction);
                     ChessPosition twoStepPosition = new ChessPosition(twoStepCheck, currentCol);
@@ -48,15 +40,7 @@ public class PawnMoveCalculator implements PieceMoveCalculator{
             ChessPosition diagonalTarget1 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
             ChessPiece pieceAtDiagonalTarget1 = board.getPiece(diagonalTarget1);
             if (pieceAtDiagonalTarget1 != null && pieceAtDiagonalTarget1.getTeamColor() != myColor ) {
-                if (targetDiagonalRow == 8 || targetDiagonalRow == 1) {
-                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.QUEEN));
-                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.ROOK));
-                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.BISHOP));
-                    validMoves.add(new ChessMove(position, diagonalTarget1, ChessPiece.PieceType.KNIGHT));
-                }
-                else {
-                    validMoves.add(new ChessMove(position, diagonalTarget1, null));
-                }
+                addMoveOrPromotions(position, diagonalTarget1, targetDiagonalRow, validMoves);
             }
         }
 
@@ -65,16 +49,21 @@ public class PawnMoveCalculator implements PieceMoveCalculator{
             ChessPosition diagonalTarget2 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
             ChessPiece pieceAtDiagonalTarget2 = board.getPiece(diagonalTarget2);
             if (pieceAtDiagonalTarget2 != null && pieceAtDiagonalTarget2.getTeamColor() != myColor) {
-                if (targetDiagonalRow == 8 || targetDiagonalRow == 1) {
-                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.QUEEN));
-                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.ROOK));
-                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.BISHOP));
-                    validMoves.add(new ChessMove(position, diagonalTarget2, ChessPiece.PieceType.KNIGHT));
-                } else {
-                    validMoves.add(new ChessMove(position, diagonalTarget2, null));
-                }
+                addMoveOrPromotions(position, diagonalTarget2, targetDiagonalRow, validMoves);
             }
         }
         return validMoves;
+    }
+
+    private void addMoveOrPromotions(ChessPosition start, ChessPosition end, int endRow,
+                                     Collection<ChessMove> validMoves) {
+        if (endRow == 1 || endRow == 8) {
+            validMoves.add(new ChessMove(start, end, ChessPiece.PieceType.QUEEN));
+            validMoves.add(new ChessMove(start, end, ChessPiece.PieceType.ROOK));
+            validMoves.add(new ChessMove(start, end, ChessPiece.PieceType.BISHOP));
+            validMoves.add(new ChessMove(start, end, ChessPiece.PieceType.KNIGHT));
+        } else {
+            validMoves.add(new ChessMove(start, end, null));
+        }
     }
 }
