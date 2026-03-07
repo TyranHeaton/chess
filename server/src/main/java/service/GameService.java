@@ -44,7 +44,8 @@ public class GameService {
         return gameID;
     }
 
-    public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException, UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public void joinGame(String authToken, String playerColor, int gameID)
+            throws DataAccessException, UnauthorizedException, AlreadyTakenException, BadRequestException {
         AuthData auth = authDatabase.get(authToken);
         if (auth == null) {
             throw new UnauthorizedException(); // 401

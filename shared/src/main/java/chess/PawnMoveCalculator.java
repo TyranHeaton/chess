@@ -18,41 +18,42 @@ public class PawnMoveCalculator implements PieceMoveCalculator{
             ChessPiece pieceAtTarget = board.getPiece(targetPosition);
             if (pieceAtTarget == null) {
                 addMoveOrPromotions(position, targetPosition, targetRow, validMoves);
-                if (currentRow == 2 && myColor == ChessGame.TeamColor.WHITE) {
-                    int twoStepCheck = currentRow + (2 * direction);
-                    ChessPosition twoStepPosition = new ChessPosition(twoStepCheck, currentCol);
-                    if (board.getPiece(twoStepPosition) == null) {
-                        validMoves.add(new ChessMove(position, twoStepPosition, null));
-                    }
-                }
-                else if (currentRow == 7 && myColor == ChessGame.TeamColor.BLACK) {
-                    int twoStepCheck = currentRow + (2 * direction);
-                    ChessPosition twoStepPosition = new ChessPosition(twoStepCheck, currentCol);
-                    if (board.getPiece(twoStepPosition) == null) {
-                        validMoves.add(new ChessMove(position, twoStepPosition, null));
-                    }
-                }
-            }
-        }
-        int targetDiagonalRow = currentRow + direction;
-        int targetDiagonalCol = currentCol + 1;
-        if (targetDiagonalRow < 9 && targetDiagonalRow > 0 && targetDiagonalCol < 9 && targetDiagonalCol > 0) {
-            ChessPosition diagonalTarget1 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
-            ChessPiece pieceAtDiagonalTarget1 = board.getPiece(diagonalTarget1);
-            if (pieceAtDiagonalTarget1 != null && pieceAtDiagonalTarget1.getTeamColor() != myColor ) {
-                addMoveOrPromotions(position, diagonalTarget1, targetDiagonalRow, validMoves);
+                boolean atStartRow = (currentRow == 2 && myColor == ChessGame.TeamColor.WHITE)
+                        || (currentRow == 7 && myColor == ChessGame.TeamColor.BLACK);
+                addTwoStepMoveIfValid(board, position, currentRow, currentCol, direction, atStartRow, validMoves);
             }
         }
 
-        targetDiagonalCol = currentCol - 1;
+        addDiagonalCaptureIfValid(board, position, currentRow, currentCol, direction, myColor, 1, validMoves);
+        addDiagonalCaptureIfValid(board, position, currentRow, currentCol, direction, myColor, -1, validMoves);
+        return validMoves;
+    }
+
+    private void addTwoStepMoveIfValid(ChessBoard board, ChessPosition position, int currentRow, int currentCol,
+                                       int direction, boolean atStartRow, Collection<ChessMove> validMoves) {
+        if (!atStartRow) {
+            return;
+        }
+
+        int twoStepCheck = currentRow + (2 * direction);
+        ChessPosition twoStepPosition = new ChessPosition(twoStepCheck, currentCol);
+        if (board.getPiece(twoStepPosition) == null) {
+            validMoves.add(new ChessMove(position, twoStepPosition, null));
+        }
+    }
+
+    private void addDiagonalCaptureIfValid(ChessBoard board, ChessPosition position, int currentRow, int currentCol,
+                                           int direction, ChessGame.TeamColor myColor, int diagonalColOffset,
+                                           Collection<ChessMove> validMoves) {
+        int targetDiagonalRow = currentRow + direction;
+        int targetDiagonalCol = currentCol + diagonalColOffset;
         if (targetDiagonalRow < 9 && targetDiagonalRow > 0 && targetDiagonalCol < 9 && targetDiagonalCol > 0) {
-            ChessPosition diagonalTarget2 = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
-            ChessPiece pieceAtDiagonalTarget2 = board.getPiece(diagonalTarget2);
-            if (pieceAtDiagonalTarget2 != null && pieceAtDiagonalTarget2.getTeamColor() != myColor) {
-                addMoveOrPromotions(position, diagonalTarget2, targetDiagonalRow, validMoves);
+            ChessPosition diagonalTarget = new ChessPosition(targetDiagonalRow, targetDiagonalCol);
+            ChessPiece pieceAtDiagonalTarget = board.getPiece(diagonalTarget);
+            if (pieceAtDiagonalTarget != null && pieceAtDiagonalTarget.getTeamColor() != myColor) {
+                addMoveOrPromotions(position, diagonalTarget, targetDiagonalRow, validMoves);
             }
         }
-        return validMoves;
     }
 
     private void addMoveOrPromotions(ChessPosition start, ChessPosition end, int endRow,
