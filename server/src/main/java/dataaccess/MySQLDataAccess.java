@@ -1,0 +1,35 @@
+package dataaccess;
+
+import exceptions.DataAccessException;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class MySQLDataAccess implements DataAccess{
+    String createTableUser = "CREATE TABLE IF NOT EXISTS users (username VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT_NULL, email VARCHAR(255)) NOT_NULL";
+    String createTableAuth = "CREATE TABLE IF NOT EXISTS auth (authToken VARCHAR(255) PRIMARY KEY, username VARCHAR(255) NOT_NULL, FOREIGN KEY (username) REFERENCES users(username))";
+    String createTableGame = "CREATE TABLE IF NOT EXISTS games (gameID INT PRIMARY KEY AUTO_INCREMENT, whiteUsername VARCHAR(255), blackUsername VARCHAR(255), gameName VARCHAR(255) NOT NULL, jsonText LONGTEXT NOT NULL)";
+    String[] createTableStatements = {createTableUser, createTableAuth, createTableGame};
+
+    @Override
+    public void insert(Object data) throws DataAccessException {
+
+    }
+
+    @Override
+    public void delete(String id) throws DataAccessException {
+
+    }
+
+    @Override
+    public void clear() throws DataAccessException {
+
+    }
+
+    @Override
+    public Object get(String id) throws DataAccessException {
+        return null;
+    }
+
+
+}
