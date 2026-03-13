@@ -3,6 +3,7 @@ package dataaccess;
 import exceptions.DataAccessException;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class MySQLDataAccess implements DataAccess{
@@ -29,6 +30,30 @@ public class MySQLDataAccess implements DataAccess{
     @Override
     public Object get(String id) throws DataAccessException {
         return null;
+    }
+
+    private int executeUpdate(String statementSQL) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+             try (PreparedStatement preparedStatement = conn.prepareStatement(statementSQL)) {
+                 return preparedStatement.executeUpdate();
+             }
+        }
+             catch (SQLException ex) {
+            throw new DataAccessException("Not able to execute update");
+        }
+    }
+
+    private void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createTableStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to create tables", ex);
+        }
     }
 
 
