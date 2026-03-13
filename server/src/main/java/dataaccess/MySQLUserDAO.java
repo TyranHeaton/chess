@@ -3,7 +3,8 @@ package dataaccess;
 import exceptions.DataAccessException;
 import model.UserData;
 
-public class MySQLUserDAO implements UserDAO {
+
+public class MySQLUserDAO extends MySQLDataAccess implements UserDAO {
 
     @Override
     public void insert(UserData user) throws DataAccessException {
@@ -17,11 +18,12 @@ public class MySQLUserDAO implements UserDAO {
 
     @Override
     public void clear() throws DataAccessException {
+        executeUpdate("TRUNCATE TABLE users");
 
     }
-
     @Override
     public UserData get(String username) throws DataAccessException {
         return null;
     }
 }
+
