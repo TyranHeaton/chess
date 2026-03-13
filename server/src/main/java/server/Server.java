@@ -5,9 +5,9 @@ import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import exceptions.UnauthorizedException;
 import io.javalin.Javalin;
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import server.handlers.ClearHandler;
 import server.handlers.GameHandler;
 import server.handlers.UserHandler;
@@ -21,9 +21,9 @@ public class Server {
 
 
     public Server() {
-        UserDAO userDAO = new UserDAO();
-        GameDAO gameDAO = new GameDAO();
-        AuthDAO authDAO = new AuthDAO();
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
         UserService userService = new UserService(userDAO, authDAO);
         GameService gameService = new GameService(gameDAO, authDAO);

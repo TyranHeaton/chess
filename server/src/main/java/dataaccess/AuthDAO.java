@@ -3,29 +3,12 @@ package dataaccess;
 import exceptions.DataAccessException;
 import model.AuthData;
 
-import java.util.HashMap;
-import java.util.Map;
+public interface AuthDAO extends DataAccess<AuthData> {
+    void insert(AuthData auth) throws DataAccessException;
 
-public class AuthDAO implements DataAccess<AuthData> {
-    private final Map<String, AuthData> auths = new HashMap<>();
+    void delete(String token) throws DataAccessException;
 
-    @Override
-    public void insert(AuthData auth) throws DataAccessException {
-        auths.put(auth.authToken(), auth);
-    }
+    void clear() throws DataAccessException;
 
-    @Override
-    public void delete(String token) throws DataAccessException {
-        auths.remove(token);
-    }
-
-    @Override
-    public void clear() throws DataAccessException {
-        auths.clear();
-    }
-
-    @Override
-    public AuthData get(String token) throws DataAccessException {
-        return auths.get(token);
-    }
+    AuthData get(String token) throws DataAccessException;
 }

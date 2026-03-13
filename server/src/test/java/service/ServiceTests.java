@@ -1,7 +1,7 @@
 package service;
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
@@ -13,23 +13,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import chess.ChessGame;
 import server.requests.CreateGameRequest;
-import server.results.ListGamesResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTests {
-    private UserDAO userDAO;
-    private GameDAO gameDAO;
-    private AuthDAO authDAO;
+    private MemoryUserDAO userDAO;
+    private MemoryGameDAO gameDAO;
+    private MemoryAuthDAO authDAO;
     private UserService userService;
     private GameService gameService;
     private ClearService clearService;
 
     @BeforeEach
     public void setup(){
-        userDAO = new UserDAO();
-        gameDAO = new GameDAO();
-        authDAO = new AuthDAO();
+        userDAO = new MemoryUserDAO();
+        gameDAO = new MemoryGameDAO();
+        authDAO = new MemoryAuthDAO();
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);
         clearService = new ClearService(userDAO, gameDAO, authDAO);

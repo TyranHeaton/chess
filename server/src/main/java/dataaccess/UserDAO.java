@@ -2,30 +2,13 @@ package dataaccess;
 
 import exceptions.DataAccessException;
 import model.UserData;
-import java.util.HashMap;
-import java.util.Map;
 
-public class UserDAO implements DataAccess<UserData> {
-    private final Map<String, UserData> users = new HashMap<>();
+public interface UserDAO extends DataAccess<UserData> {
+    void insert(UserData user) throws DataAccessException;
 
-    @Override
-    public void insert(UserData user) throws DataAccessException {
-        users.put(user.username(), user);
-    }
+    void delete(String username) throws DataAccessException;
 
-    @Override
-    public void delete(String username) throws DataAccessException {
-        users.remove(username);
-    }
+    void clear() throws DataAccessException;
 
-    @Override
-    public void clear() throws DataAccessException {
-        users.clear();
-    }
-
-    @Override
-    public UserData get(String username) throws DataAccessException {
-        return users.get(username);
-    }
-
+    UserData get(String username) throws DataAccessException;
 }

@@ -1,9 +1,11 @@
 package service;
 import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.UserDAO;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
-import dataaccess.UserDAO;
+import dataaccess.MemoryUserDAO;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
@@ -13,7 +15,7 @@ public class UserService {
     private final UserDAO userDatabase;
     private final AuthDAO authDatabase;
 
-    public UserService(UserDAO userDatabase, AuthDAO authDatabase) {
+    public UserService(MemoryUserDAO userDatabase, MemoryAuthDAO authDatabase) {
         this.userDatabase = userDatabase;
         this.authDatabase = authDatabase;
     }

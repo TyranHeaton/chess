@@ -1,18 +1,14 @@
 package service;
 
-import dataaccess.AuthDAO;
+import dataaccess.*;
 import exceptions.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
-import exceptions.UnauthorizedException;
-import model.AuthData;
 
 public class ClearService {
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
 
-    public ClearService(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
+    public ClearService(MemoryUserDAO userDAO, MemoryGameDAO gameDAO, MemoryAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
