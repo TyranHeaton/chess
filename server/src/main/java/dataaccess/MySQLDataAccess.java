@@ -10,11 +10,6 @@ import java.sql.SQLException;
 public class MySQLDataAccess{
 
 
-    public void executeInsert(Object data) throws DataAccessException {
-
-    }
-
-
     public void delete(String id) throws DataAccessException {
 
     }
@@ -64,9 +59,17 @@ public class MySQLDataAccess{
     }
 
     public void configureDatabase() throws DataAccessException {
-        String createTableUser = "CREATE TABLE IF NOT EXISTS users (username VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL)";
-        String createTableAuth = "CREATE TABLE IF NOT EXISTS auth (authToken VARCHAR(255) NOT NULL, username VARCHAR(255) NOT NULL, PRIMARY KEY (authToken))";
-        String createTableGame = "CREATE TABLE IF NOT EXISTS games (gameID INT NOT NULL AUTO_INCREMENT, whiteUsername VARCHAR(255), blackUsername VARCHAR(255), gameName VARCHAR(255) NOT NULL, jsonText LONGTEXT NOT NULL, PRIMARY KEY (gameID))";
+        String createTableUser =
+                "CREATE TABLE IF NOT EXISTS users " +
+                "(username VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL)";
+        String createTableAuth =
+                "CREATE TABLE IF NOT EXISTS auth " +
+                "(authToken VARCHAR(255) NOT NULL, username VARCHAR(255) NOT NULL, PRIMARY KEY (authToken))";
+        String createTableGame =
+                "CREATE TABLE IF NOT EXISTS games " +
+                "(gameID INT NOT NULL AUTO_INCREMENT, whiteUsername VARCHAR(255), " +
+                "blackUsername VARCHAR(255), gameName VARCHAR(255) NOT NULL, " +
+                "jsonText LONGTEXT NOT NULL, PRIMARY KEY (gameID))";
         String[] createTableStatements = {createTableUser, createTableAuth, createTableGame};
 
         for (String sql : createTableStatements) {

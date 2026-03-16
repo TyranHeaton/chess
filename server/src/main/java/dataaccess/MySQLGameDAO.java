@@ -7,7 +7,6 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class MySQLGameDAO extends MySQLDataAccess implements GameDAO {
 
@@ -27,8 +26,8 @@ public class MySQLGameDAO extends MySQLDataAccess implements GameDAO {
     }
 
     @Override
-    public GameData get(String ID) throws DataAccessException {
-        int gameID = Integer.parseInt(ID);
+    public GameData get(String id) throws DataAccessException {
+        int gameID = Integer.parseInt(id);
         String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, jsonText FROM games WHERE gameID = ?";
         return executeQuery(sql, rs -> {
             if (rs.next()) {
