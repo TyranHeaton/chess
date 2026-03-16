@@ -44,7 +44,7 @@ public class MySQLDataAccess{
             }
         }
         catch (SQLException ex) {
-            throw new DataAccessException("Not able to execute statement");
+            throw new DataAccessException("SQL Error: " + ex.getMessage());
         }
     }
 
@@ -63,9 +63,9 @@ public class MySQLDataAccess{
         }, params);
     }
 
-    private void configureDatabase() throws DataAccessException {
-        String createTableUser = "CREATE TABLE IF NOT EXISTS users (username VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT_NULL, email VARCHAR(255)) NOT_NULL";
-        String createTableAuth = "CREATE TABLE IF NOT EXISTS auth (authToken VARCHAR(255) PRIMARY KEY, username VARCHAR(255) NOT_NULL, FOREIGN KEY (username) REFERENCES users(username))";
+    public void configureDatabase() throws DataAccessException {
+        String createTableUser = "CREATE TABLE IF NOT EXISTS users (username VARCHAR(255) PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL)";
+        String createTableAuth = "CREATE TABLE IF NOT EXISTS auth (authToken VARCHAR(255) PRIMARY KEY, username VARCHAR(255) NOT NULL, FOREIGN KEY (username) REFERENCES users(username))";
         String createTableGame = "CREATE TABLE IF NOT EXISTS games (gameID INT PRIMARY KEY AUTO_INCREMENT, whiteUsername VARCHAR(255), blackUsername VARCHAR(255), gameName VARCHAR(255) NOT NULL, jsonText LONGTEXT NOT NULL)";
         String[] createTableStatements = {createTableUser, createTableAuth, createTableGame};
 
@@ -73,6 +73,4 @@ public class MySQLDataAccess{
             executeUpdate(sql);
         }
     }
-
-
 }

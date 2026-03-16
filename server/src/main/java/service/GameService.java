@@ -2,12 +2,10 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
 import dataaccess.GameDAO;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
-import dataaccess.MemoryGameDAO;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
@@ -19,7 +17,7 @@ public class GameService {
     private final GameDAO gameDatabase;
     private final AuthDAO authDatabase;
 
-    public GameService(MemoryGameDAO gameDatabase, MemoryAuthDAO authDatabase) {
+    public GameService(GameDAO gameDatabase, AuthDAO authDatabase) {
         this.gameDatabase = gameDatabase;
         this.authDatabase = authDatabase;
     }

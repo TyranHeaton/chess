@@ -1,13 +1,11 @@
 package server;
 import com.google.gson.Gson;
+import dataaccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import exceptions.UnauthorizedException;
 import io.javalin.Javalin;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import server.handlers.ClearHandler;
 import server.handlers.GameHandler;
 import server.handlers.UserHandler;
@@ -17,21 +15,19 @@ import service.UserService;
 
 public class Server {
     private final Javalin javalin;
-    private final ClearService clearService;
-
 
     public Server() {
-        MemoryUserDAO userDAO = new MemoryUserDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        UserDAO userDAO = new MySQLUserDAO();
+        GameDAO gameDAO = new MySQLGameDAO();
+        AuthDAO authDAO = new MySQLAuthDAO();
 
         UserService userService = new UserService(userDAO, authDAO);
         GameService gameService = new GameService(gameDAO, authDAO);
-        this.clearService = new ClearService(userDAO, gameDAO, authDAO);
+        ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
 
         UserHandler userHandler = new UserHandler(userService);
         GameHandler gameHandler = new GameHandler(gameService);
-        ClearHandler clearHandler = new ClearHandler(this.clearService);
+        ClearHandler clearHandler = new ClearHandler(clearService);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
@@ -75,6 +71,21 @@ public class Server {
     }
 
     public int run(int desiredPort) {
+        System.out.println("SERVER DEBUG: run() method started.");
+        try {
+            // Force the creation of the database
+            DatabaseManager.createDatabase();
+            System.out.println("SERVER DEBUG: DatabaseManager.createDatabase() finished.");
+
+            // Force the creation of the tables
+            MySQLUserDAO setupDAO = new MySQLUserDAO();
+            setupDAO.configureDatabase();
+            System.out.println("SERVER DEBUG: configureDatabase() finished successfully!");
+
+        } catch (Exception e) {
+            System.out.println("SERVER DEBUG: Database setup FAILED!");
+            e.printStackTrace();
+        }
         javalin.start(desiredPort);
         return javalin.port();
     }

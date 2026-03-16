@@ -1,33 +1,34 @@
 package service;
-import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
-import dataaccess.MemoryUserDAO;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.UUID;
 
 public class UserService {
     private final UserDAO userDatabase;
     private final AuthDAO authDatabase;
 
-    public UserService(MemoryUserDAO userDatabase, MemoryAuthDAO authDatabase) {
+    public UserService(UserDAO userDatabase, AuthDAO authDatabase) {
         this.userDatabase = userDatabase;
         this.authDatabase = authDatabase;
     }
 
     public AuthData register(UserData newUserData) throws BadRequestException, AlreadyTakenException, DataAccessException, UnauthorizedException {
+        System.out.println("SERVICE: Checking if user exists: " + newUserData.username());
         if (newUserData.username() == null || newUserData.password() == null || newUserData.email() == null) {
             throw new BadRequestException();
         }
         if (userDatabase.get(newUserData.username()) != null) { //getUser
+            System.out.println("SERVICE: User already exists, skipping insert.");
             throw new AlreadyTakenException();
         }
-
+        System.out.println("SERVICE: Inserting user into Database...");
         userDatabase.insert(newUserData); // createUser
         return login(newUserData.username(), newUserData.password());
     }
@@ -37,7 +38,7 @@ public class UserService {
         if (username == null || password == null) {
             throw new BadRequestException();
         }
-        if (user == null || !user.password().equals(password)) {
+        if (user == null || !BCrypt.checkpw(password, user.password())) {
             throw new UnauthorizedException(); // 401
         }
         String token = UUID.randomUUID().toString();
