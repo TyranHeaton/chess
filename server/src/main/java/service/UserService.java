@@ -29,7 +29,8 @@ public class UserService {
             throw new AlreadyTakenException();
         }
         System.out.println("SERVICE: Inserting user into Database...");
-        userDatabase.insert(newUserData); // createUser
+        String hashedPassword = BCrypt.hashpw(newUserData.password(), BCrypt.gensalt());
+        userDatabase.insert(new UserData(newUserData.username(), hashedPassword, newUserData.email())); // createUser
         return login(newUserData.username(), newUserData.password());
     }
 
