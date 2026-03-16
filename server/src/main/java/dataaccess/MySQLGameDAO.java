@@ -21,7 +21,7 @@ public class MySQLGameDAO extends MySQLDataAccess implements GameDAO {
 
     @Override
     public void insert(GameData gameData) throws DataAccessException {
-        String sql = "INSERT INTO games (game_id, whiteUsername, blackUsername, gameName, jsonText) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, jsonText) VALUES (?, ?, ?, ?, ?)";
         String jsonGame = serializeGame(gameData.game());
         executeUpdate(sql, gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
     }

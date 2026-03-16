@@ -16,14 +16,14 @@ public class ClearHandler {
 
     }
 
-    public void clear(Context ctx) throws DataAccessException {
+    public void clear(Context ctx) {
         try {
             clearService.clear();
             ctx.status(200);
             ctx.result("{}"); // Success requires an empty JSON object
         } catch (DataAccessException e) {
             ctx.status(500);
+            ctx.result(new Gson().toJson(java.util.Map.of("message", "Error: " + e.getMessage())));
         }
-
     }
 }
