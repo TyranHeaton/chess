@@ -5,6 +5,9 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class ServerFacadeTests {
     private static ServerFacade serverFacade;
@@ -45,7 +48,7 @@ public class ServerFacadeTests {
 
     @Test
     public void registerTestNegative() {
-        Assertions.assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             serverFacade.register("tester", "password1", "test@email1");
             serverFacade.register("tester", "password2", "test@email2");
         });
@@ -63,7 +66,7 @@ public class ServerFacadeTests {
     @Test
     public void loginTestNegative() throws Exception {
         serverFacade.register("tester", "password1", "test@email1");
-        Assertions.assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             serverFacade.login("tester", "wrongpassword");
         });
     }
@@ -74,7 +77,7 @@ public class ServerFacadeTests {
         AuthData authData = serverFacade.login("tester", "password1");
         Assertions.assertNotNull(authData);
         serverFacade.logout(authData.authToken());
-        Assertions.assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             serverFacade.logout(authData.authToken());
         });
     }
@@ -84,7 +87,7 @@ public class ServerFacadeTests {
         serverFacade.register("tester", "password1", "test@email1");
         AuthData authData = serverFacade.login("tester", "password1");
         Assertions.assertNotNull(authData);
-        Assertions.assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             serverFacade.logout("invalidtoken");
         });
     }
@@ -103,7 +106,7 @@ public class ServerFacadeTests {
         serverFacade.register("tester", "password1", "test@email1");
         AuthData authData = serverFacade.login("tester", "password1");
         Assertions.assertNotNull(authData);
-        Assertions.assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             serverFacade.createGame("invalidtoken", "Test Game");
         });
     }
@@ -125,9 +128,31 @@ public class ServerFacadeTests {
         serverFacade.register("tester", "password1", "test@email1");
         AuthData authData = serverFacade.login("tester", "password1");
         Assertions.assertNotNull(authData);
-        Assertions.assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             serverFacade.listGames("invalidtoken");
         });
     }
 
+    @Test
+    public void joinGameTestPositive() throws Exception {
+        serverFacade.register("tester1", "password1", "test1@email");
+        serverFacade.register("tester2", "password2", "test2@email");
+        AuthData authData1 = serverFacade.login("tester1", "password1");
+        AuthData authData2 = serverFacade.login("tester2", "password2");
+        int gameID = serverFacade.createGame(authData1.authToken(), "Test Game");
+        assertDoesNotThrow(() -> serverFacade.joinGame(authData2.authToken(), "black", gameID));
+    }
+
+    @Test
+    public void joinGameTestNegative() throws Exception {
+        serverFacade.register("tester1", "password1", "test1@email");
+        serverFacade.register("tester2", "password2", "test2@email");
+        AuthData auth1 = serverFacade.login("tester1", "password1");
+        AuthData auth2 = serverFacade.login("tester2", "password2");
+        int gameID = serverFacade.createGame(auth1.authToken(), "Test Game");
+        serverFacade.joinGame(auth1.authToken(), "WHITE", gameID);
+        assertThrows(Exception.class, () -> {
+            serverFacade.joinGame(auth2.authToken(), "WHITE", gameID);
+        });
+    }
 }

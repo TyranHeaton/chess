@@ -61,7 +61,11 @@ public class ServerFacade {
         return response.games();
     }
 
-
+    public void joinGame(String authToken, String playerColor, int gameID) throws Exception {
+        String path = "/game";
+        Map<String, Object> requestBody = Map.of("playerColor", playerColor, "gameID", gameID);
+        makeRequest("PUT", path, authToken, requestBody, null);
+    }
 
 
 
@@ -88,7 +92,7 @@ public class ServerFacade {
             httpConnection.connect();
 
             // Throws an exception if the server returns any status code other than '200 OK'
-            if (httpConnection.getResponseCode() != 200) {
+            if (httpConnection.getResponseCode() < 200 || httpConnection.getResponseCode() >= 300) {
                 throw new Exception("Error: " + httpConnection.getResponseMessage());
             }
 
