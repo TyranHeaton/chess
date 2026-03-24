@@ -70,6 +70,7 @@ public class ServerFacade {
 
 
     // Private helper methods
+
     private <T> T makeRequest(String method, String path, String authToken, Object request, Class<T> response) throws Exception {
         try {
             // Initializes the connection object using a private helper method (defined below) that configures the base URL and HTTP method.
