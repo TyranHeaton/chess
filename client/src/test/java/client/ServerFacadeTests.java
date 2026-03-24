@@ -88,4 +88,46 @@ public class ServerFacadeTests {
             serverFacade.logout("invalidtoken");
         });
     }
+
+    @Test
+    public void createGameTestPositive() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        int gameID = serverFacade.createGame(authData.authToken(), "Test Game");
+        Assertions.assertTrue(gameID > 0);
+    }
+
+    @Test
+    public void createGameTestNegative() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        Assertions.assertThrows(Exception.class, () -> {
+            serverFacade.createGame("invalidtoken", "Test Game");
+        });
+    }
+
+    @Test
+    public void listGamesTestPositive() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        int gameID = serverFacade.createGame(authData.authToken(), "Test Game");
+        Assertions.assertTrue(gameID > 0);
+        var games = serverFacade.listGames(authData.authToken());
+        Assertions.assertEquals(1, games.length);
+        Assertions.assertEquals("Test Game", games[0].gameName());
+    }
+
+    @Test
+    public void listGamesTestNegative() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        Assertions.assertThrows(Exception.class, () -> {
+            serverFacade.listGames("invalidtoken");
+        });
+    }
+
 }

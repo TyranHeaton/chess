@@ -2,6 +2,7 @@ package ui;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,23 @@ public class ServerFacade {
         String path = "/session";
         makeRequest("DELETE", path, authToken, null, null);
     }
+
+    public int createGame(String authToken, String gameName) throws Exception {
+        String path = "/game";
+        record CreateResponse(int gameID) {}
+        Map<String, String> requestBody = Map.of("gameName", gameName);
+        var response = makeRequest("POST", path, authToken, requestBody, CreateResponse.class);
+        return response.gameID();
+    }
+
+    public GameData[] listGames(String authToken) throws Exception {
+        String path = "/game";
+        record listResponse(GameData[] games) {}
+        var response = makeRequest("GET", path, authToken, null, listResponse.class);
+        return response.games();
+    }
+
+
 
 
 
