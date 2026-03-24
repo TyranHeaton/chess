@@ -44,10 +44,48 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void registerTestNgative() {
+    public void registerTestNegative() {
         Assertions.assertThrows(Exception.class, () -> {
             serverFacade.register("tester", "password1", "test@email1");
             serverFacade.register("tester", "password2", "test@email2");
+        });
+    }
+
+    @Test
+    public void loginTestPositive() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        Assertions.assertEquals("tester", authData.username());
+        Assertions.assertNotNull(authData.authToken());
+    }
+
+    @Test
+    public void loginTestNegative() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        Assertions.assertThrows(Exception.class, () -> {
+            serverFacade.login("tester", "wrongpassword");
+        });
+    }
+
+    @Test
+    public void logoutTestPositive() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        serverFacade.logout(authData.authToken());
+        Assertions.assertThrows(Exception.class, () -> {
+            serverFacade.logout(authData.authToken());
+        });
+    }
+
+    @Test
+    public void logoutTestNegative() throws Exception {
+        serverFacade.register("tester", "password1", "test@email1");
+        AuthData authData = serverFacade.login("tester", "password1");
+        Assertions.assertNotNull(authData);
+        Assertions.assertThrows(Exception.class, () -> {
+            serverFacade.logout("invalidtoken");
         });
     }
 }

@@ -31,8 +31,19 @@ public class ServerFacade {
         return makeRequest("POST", path, null, requestBody, AuthData.class);
     }
 
+    public AuthData login(String username, String password) throws Exception {
+        String path = "/session";
+        Map<String, String> requestBody = Map.of("username", username, "password", password);
+        return makeRequest("POST", path, null, requestBody, AuthData.class);
+    }
+
 
     // Post-login public methods
+
+    public void logout(String authToken) throws Exception {
+        String path = "/session";
+        makeRequest("DELETE", path, authToken, null, null);
+    }
 
 
 
