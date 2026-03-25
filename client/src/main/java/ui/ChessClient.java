@@ -27,7 +27,13 @@ public class ChessClient {
 
             return switch (cmd) {
                 case "register" -> register(params);
-                //TODO: Complete other cases
+                case "login" -> login(params);
+                case "create" -> createGame(params);
+                case "list" -> listGames();
+                case "play" -> joinGame(params, false);
+                case "observe" -> joinGame(params, true);
+                case "logout" -> logout();
+                case "quit" -> "quit";
                 default -> help();
             };
 
@@ -79,14 +85,40 @@ public class ChessClient {
         return sb.toString();
     }
 
-    private String joinGame(String[] params) throws Exception {
+    private String joinGame(String[] params, boolean isObserver) throws Exception {
         assertLoggedIn();
         if (params.length >= 1) {
             int uiID = Integer.parseInt(params[0]);
-            //TODO: Complete this method
+            Integer gameID = gameListItemMap.get(uiID);
+            if (gameID == null) {
+                throw new Exception("Invalid game ID.");
+            }
+
+            String playerColor = null;
+            if (!isObserver) {
+                if (params.length < 2) {
+                    throw new Exception("Expected: <ID> [WHITE|BLACK]");
+                }
+                playerColor = params[1].toUpperCase();
+            }
+
+            server.joinGame(null, playerColor, gameID);
+
+            //TODO: Implement logic or call method for drawing the game board
+
+            return "Joined game " + gameID + " as " + (isObserver ? "OBSERVER" : playerColor);
         }
         throw new Exception("Expected: <ID> [WHITE|BLACK]");
     }
+
+    private String logout() throws Exception {
+        assertLoggedIn();
+        server.logout(null);
+        state = State.LOGGED_OUT;
+        return "Logged out successfully.";
+    }
+
+
 
     //TODO: Complete other methods
 
