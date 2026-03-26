@@ -1,6 +1,7 @@
 package ui;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.AuthData;
 import model.GameData;
 
@@ -11,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ServerFacade {
@@ -63,7 +65,9 @@ public class ServerFacade {
 
     public void joinGame(String authToken, String playerColor, int gameID) throws Exception {
         String path = "/game";
-        Map<String, Object> requestBody = Map.of("playerColor", playerColor, "gameID", gameID);
+        var requestBody = new java.util.HashMap<String, Object>();
+        requestBody.put("gameID", gameID);
+        requestBody.put("playerColor", playerColor);
         makeRequest("PUT", path, authToken, requestBody, null);
     }
 
@@ -73,23 +77,23 @@ public class ServerFacade {
 
     private <T> T makeRequest(String method, String path, String authToken, Object request, Class<T> response) throws Exception {
         try {
-            // Initializes the connection object using a private helper method (defined below) that configures the base URL and HTTP method.
             HttpURLConnection httpConnection = getHttpURLConnection(method, path);
+            httpConnection.setRequestMethod(method);
 
-            // If an authentication token exists, it is assigned to the 'Authorization' header of the request.
             if (authToken != null) {
                 httpConnection.setRequestProperty("Authorization", authToken);
             }
 
-            // If a request object exists, the header is set to indicate JSON data is being sent.
-            // The object is then converted to a JSON string and written into the request body as bytes.
             if (request != null) {
                 httpConnection.setRequestProperty("Content-Type", "application/json");
-                String requestData = new Gson().toJson(request);
-                httpConnection.getOutputStream().write(requestData.getBytes());
+                httpConnection.setDoOutput(true);
+                var gson = new GsonBuilder().serializeNulls().create();
+                String requestData = gson.toJson(request);
+                try (var outputStream = httpConnection.getOutputStream()) {
+                    outputStream.write(requestData.getBytes(StandardCharsets.UTF_8));
+                }
             }
 
-            // Opens the network communication link and sends the request headers to the server.
             httpConnection.connect();
 
             // Throws an exception if the server returns any status code other than '200 OK'
@@ -109,10 +113,7 @@ public class ServerFacade {
 
     private HttpURLConnection getHttpURLConnection(String method, String path) throws URISyntaxException, IOException {
         URL url = new URI(serverURL + path).toURL(); // Creates a URL object by combining the base address and the specific endpoint path.
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(); // Open a connection to the URL
-        httpConnection.setRequestMethod(method); // Set the HTTP method (e.g., GET, POST, PUT, DELETE) for the request
-        httpConnection.setDoOutput(true); // Enable output for the connection, allowing us to send data in the request body
-        return httpConnection;
+        return (HttpURLConnection) url.openConnection();
     }
 
     private <T> T readBody(HttpURLConnection httpConnection, Class<T> response) throws IOException {

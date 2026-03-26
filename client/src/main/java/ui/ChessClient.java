@@ -37,7 +37,7 @@ public class ChessClient {
             };
 
         } catch (Exception e) {
-            return e.getMessage();
+            return "Error: " + e.getMessage();
         }
 
     }
