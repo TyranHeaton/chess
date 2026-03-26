@@ -1,7 +1,5 @@
 package ui;
 
-
-
 import model.AuthData;
 
 import java.util.Arrays;
@@ -12,10 +10,11 @@ import java.util.Map;
 public class ChessClient {
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
+    private String authToken = null;
 
     private Map<Integer, Integer> gameListItemMap = new HashMap<>();
 
-    public ChessClient(int port){
+    public ChessClient(int port) {
         server = new ServerFacade(port);
     }
 
@@ -43,12 +42,16 @@ public class ChessClient {
 
     }
 
+    public State getState() {
+        return state;
+    }
+
     private String register(String[] params) throws Exception {
         if (params.length == 3) {
             AuthData authData = server.register(params[0], params[1], params[2]);
-            var authToken = authData.authToken();
+            this.authToken = authData.authToken();
             state = State.LOGGED_IN;
-            return "Registered successfully! You are logged in as " + params[0];
+            return "Registered successfully! You are logged in as " + params[0] + ".\n";
         }
         throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
@@ -66,7 +69,7 @@ public class ChessClient {
     private String createGame(String[] params) throws Exception {
         assertLoggedIn();
         if (params.length == 1) {
-            server.createGame(null, params[0]);
+            server.createGame(this.authToken, params[0]);
             return "Game created! ";
         }
         throw new Exception("Expected: <NAME>");
@@ -74,7 +77,7 @@ public class ChessClient {
 
     private String listGames() throws Exception {
         assertLoggedIn();
-        var games = server.listGames(null);
+        var games = server.listGames(this.authToken);
         gameListItemMap.clear();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < games.length; i++) {
@@ -102,9 +105,13 @@ public class ChessClient {
                 playerColor = params[1].toUpperCase();
             }
 
-            server.joinGame(null, playerColor, gameID);
+            server.joinGame(this.authToken, playerColor, gameID);
 
-            //TODO: Implement logic or call method for drawing the game board
+            chess.ChessBoard board = new chess.ChessBoard();
+            board.resetBoard();
+
+            boolean isWhite = isObserver || params[1].equalsIgnoreCase("WHITE");
+            BoardDrawer.drawBoard(board, isWhite);
 
             return "Joined game " + gameID + " as " + (isObserver ? "OBSERVER" : playerColor);
         }
@@ -117,10 +124,6 @@ public class ChessClient {
         state = State.LOGGED_OUT;
         return "Logged out successfully.";
     }
-
-
-
-    //TODO: Complete other methods
 
     public String help() {
         if (state == State.LOGGED_OUT) {

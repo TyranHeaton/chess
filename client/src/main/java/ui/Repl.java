@@ -3,6 +3,12 @@ package ui;
 import java.util.Scanner;
 
 public class Repl {
+    private final ChessClient client;
+
+    public Repl(int port) {
+        client = new ChessClient(port);
+    }
+
 
     public void run() {
         System.out.println("Welcome to chess! Type 'help' to get started.");
@@ -11,6 +17,8 @@ public class Repl {
         String result = "";
 
         while(true) {
+            String status = "(" + client.getState() + ")";
+            System.out.print("\n" + status + " >>> ");
             printPrompt();
             String input = scanner.nextLine();
 
@@ -18,8 +26,8 @@ public class Repl {
                 break;
             }
             try {
-                // TODO: Call the client
-                System.out.println("You entered: " + input);
+                String response = client.evaluateCommand(input);
+                System.out.print(response);
             }
             catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
@@ -28,6 +36,6 @@ public class Repl {
     }
 
     private void printPrompt(){
-        System.out.print("> ");
+        System.out.print(" ");
     }
 }

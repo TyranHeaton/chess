@@ -1,6 +1,9 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +22,13 @@ public class BoardDrawer {
                 drawRow(board, row, true);
             }
         }
-        //TODO: Complete method
+        else {
+            for (int row = 1; row <= 8; row++) {
+                drawRow(board, row, false);
+            }
+        }
+        drawHeaders(isWhitePerspective);
+        out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
     }
 
     public static void drawHeaders(boolean isWhitePerspective) {
@@ -46,10 +55,48 @@ public class BoardDrawer {
                 drawSquare(board, row, c);
             }
         }
-        //TODO: Complete method
+        else {
+            for (int c = 8; c >= 1; c--) {
+                drawSquare(board, row, c);
+            }
+        }
+
+        out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + " " + row + " ");
+        out.println(RESET_BG_COLOR);
     }
 
     public static void drawSquare(ChessBoard board, int row, int col) {
-        //TODO: Implement method
+        if ((row + col) % 2 == 0) {
+            out.print(SET_BG_COLOR_BLACK);
+        }
+        else {
+            out.print(SET_BG_COLOR_WHITE);
+        }
+
+        ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+
+        if (piece == null) {
+            out.print("   ");
+        }
+        else {
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                out.print(SET_TEXT_COLOR_RED + getPieceChar(piece));
+            }
+            else {
+                out.print(SET_TEXT_COLOR_BLUE + getPieceChar(piece));
+            }
+        }
+
+    }
+
+    public static String getPieceChar(ChessPiece piece) {
+        return switch (piece.getPieceType()) {
+            case KING -> " K ";
+            case QUEEN -> " Q ";
+            case BISHOP -> " B ";
+            case KNIGHT -> " N ";
+            case ROOK -> " R ";
+            case PAWN -> " P ";
+        };
     }
 }
