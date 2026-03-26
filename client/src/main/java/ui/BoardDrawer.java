@@ -12,7 +12,7 @@ import static ui.EscapeSequences.*;
 import static java.lang.System.out;
 
 public class BoardDrawer {
-    private static final PrintStream printStream = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+    private static final PrintStream PRINT_STREAM = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
     public static void drawBoard(ChessBoard board, boolean isWhitePerspective) {
         drawHeaders(isWhitePerspective);

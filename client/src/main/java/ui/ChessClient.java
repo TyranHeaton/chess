@@ -83,7 +83,8 @@ public class ChessClient {
         for (int i = 0; i < games.length; i++) {
             int uiID = i + 1;
             gameListItemMap.put(uiID, games[i].gameID());
-            sb.append(String.format("%d: %s (White: %s, Black: %s)\n", uiID, games[i].gameName(), games[i].whiteUsername(), games[i].blackUsername()));
+            sb.append(String.format("%d: %s (White: %s, Black: %s)\n",
+                    uiID, games[i].gameName(), games[i].whiteUsername(), games[i].blackUsername()));
         }
         return sb.toString();
     }
@@ -125,22 +126,6 @@ public class ChessClient {
         return "Logged out successfully.";
     }
 
-    private String observeGame(String[] params) throws Exception {
-        assertLoggedIn();
-        if (params.length >= 1) {
-            int uiID = Integer.parseInt(params[0]);
-            int gameID = gameListItemMap.get(uiID);
-
-            server.joinGame(this.authToken, null, gameID);
-
-            chess.ChessBoard board = new chess.ChessBoard();
-            board.resetBoard();
-            BoardDrawer.drawBoard(board, true);
-
-            return "Observing game " + gameID;
-        }
-        throw new Exception("Expected: <ID>");
-    }
 
     public String help() {
         if (state == State.LOGGED_OUT) {

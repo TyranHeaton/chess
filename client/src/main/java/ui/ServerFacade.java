@@ -56,8 +56,8 @@ public class ServerFacade {
 
     public GameData[] listGames(String authToken) throws Exception {
         String path = "/game";
-        record listResponse(GameData[] games) {}
-        var response = makeRequest("GET", path, authToken, null, listResponse.class);
+        record ListResponse(GameData[] games) {}
+        var response = makeRequest("GET", path, authToken, null, ListResponse.class);
         return response.games();
     }
 
@@ -116,9 +116,10 @@ public class ServerFacade {
     }
 
     private <T> T readBody(HttpURLConnection httpConnection, Class<T> response) throws IOException {
-        if (response == null) return null;
+        if (response == null) { return null; }
         try (InputStream responseBody = httpConnection.getInputStream()) {
-            InputStreamReader reader = new InputStreamReader(responseBody); // Acts as a bridge that decodes the raw byte stream from the server into readable text characters.
+            // Acts as a bridge that decodes the raw byte stream from the server into readable text characters.
+            InputStreamReader reader = new InputStreamReader(responseBody);
             return new Gson().fromJson(reader, response); // Uses Gson to deserialize the response into a Java object
         }
     }
