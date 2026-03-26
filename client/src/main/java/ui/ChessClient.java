@@ -12,7 +12,7 @@ public class ChessClient {
     private State state = State.LOGGED_OUT;
     private String authToken = null;
 
-    private Map<Integer, Integer> gameListItemMap = new HashMap<>();
+    private final Map<Integer, Integer> gameListItemMap = new HashMap<>();
 
     public ChessClient(int port) {
         server = new ServerFacade(port);
@@ -20,8 +20,8 @@ public class ChessClient {
 
     public String evaluateCommand(String command) {
         try {
-            var parts = command.toLowerCase().split(" ");
-            var cmd = parts[0];
+            var parts = command.split(" ");
+            var cmd = parts[0].toLowerCase();
             var params = Arrays.copyOfRange(parts, 1, parts.length);
 
             return switch (cmd) {
@@ -59,7 +59,7 @@ public class ChessClient {
     private String login(String[] params) throws Exception {
         if (params.length == 2) {
             AuthData authData = server.login(params[0], params[1]);
-            var authToken = authData.authToken();
+            this.authToken = authData.authToken();
             state = State.LOGGED_IN;
             return "Logged in successfully as " + params[0];
         }
@@ -120,9 +120,26 @@ public class ChessClient {
 
     private String logout() throws Exception {
         assertLoggedIn();
-        server.logout(null);
+        server.logout(this.authToken);
         state = State.LOGGED_OUT;
         return "Logged out successfully.";
+    }
+
+    private String observeGame(String[] params) throws Exception {
+        assertLoggedIn();
+        if (params.length >= 1) {
+            int uiID = Integer.parseInt(params[0]);
+            int gameID = gameListItemMap.get(uiID);
+
+            server.joinGame(this.authToken, null, gameID);
+
+            chess.ChessBoard board = new chess.ChessBoard();
+            board.resetBoard();
+            BoardDrawer.drawBoard(board, true);
+
+            return "Observing game " + gameID;
+        }
+        throw new Exception("Expected: <ID>");
     }
 
     public String help() {
@@ -151,7 +168,7 @@ public class ChessClient {
         }
     }
 
-    enum State {
+    public enum State {
         LOGGED_OUT,
         LOGGED_IN
     }
