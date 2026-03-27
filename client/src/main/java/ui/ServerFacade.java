@@ -65,13 +65,9 @@ public class ServerFacade {
 
     public void joinGame(String authToken, String playerColor, int gameID) throws Exception {
         String path = "/game";
-        var requestBody = new java.util.HashMap<String, Object>();
-        requestBody.put("gameID", gameID);
-        requestBody.put("playerColor", playerColor);
+        Map<String, Object> requestBody = Map.of("gameID", gameID, "playerColor", playerColor);
         makeRequest("PUT", path, authToken, requestBody, null);
     }
-
-
 
     // Private helper methods
 

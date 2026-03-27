@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import model.AuthData;
 
 import java.util.Arrays;
@@ -30,7 +31,7 @@ public class ChessClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "play" -> joinGame(params, false);
-                case "observe" -> joinGame(params, true);
+                case "observe" -> observeGame(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
@@ -91,33 +92,54 @@ public class ChessClient {
 
     private String joinGame(String[] params, boolean isObserver) throws Exception {
         assertLoggedIn();
-        if (params.length >= 1) {
-            int uiID = Integer.parseInt(params[0]);
-            Integer gameID = gameListItemMap.get(uiID);
-            if (gameID == null) {
-                throw new Exception("Invalid game ID.");
-            }
+        if (params.length < 2) {
+            throw new Exception("Expected: <ID> [WHITE|BLACK]");
+        }
 
-            String playerColor = null;
-            if (!isObserver) {
-                if (params.length < 2) {
-                    throw new Exception("Expected: <ID> [WHITE|BLACK]");
-                }
-                playerColor = params[1].toUpperCase();
-            }
+        int uiID = Integer.parseInt(params[0]);
 
-            server.joinGame(this.authToken, playerColor, gameID);
+        if (!gameListItemMap.containsKey(uiID)) {
+            throw new Exception("Please use list to see valid game IDs before trying to join.");
+        }
 
-            chess.ChessBoard board = new chess.ChessBoard();
+        try {
+            int actualGameID = gameListItemMap.get(uiID);
+            String playerColor = params[1].toUpperCase();
+            server.joinGame(this.authToken, playerColor, gameListItemMap.get(actualGameID));
+
+            ChessBoard board = new ChessBoard();
             board.resetBoard();
-
-            boolean isWhite = isObserver || params[1].equalsIgnoreCase("WHITE");
+            boolean isWhite = playerColor.equalsIgnoreCase("WHITE");
             BoardDrawer.drawBoard(board, isWhite);
 
-            return "Joined game " + gameID + " as " + (isObserver ? "OBSERVER" : playerColor);
+            return "Joined game " + uiID + " as " + playerColor;
         }
-        throw new Exception("Expected: <ID> [WHITE|BLACK]");
+        catch (NumberFormatException e) {
+            throw new Exception("ID must be a number.");
+        }
     }
+
+    private String observeGame(String[] params) throws Exception {
+        if (params.length < 1) {
+            return "Expected: <ID>";
+        }
+        try {
+            int uiID = Integer.parseInt(params[0]);
+
+            if (!gameListItemMap.containsKey(uiID)) {
+                return "Please use list to see valid game IDs before trying to observe.";
+            }
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            BoardDrawer.drawBoard(board, true);
+
+            return "Observing game " + uiID;
+        }
+        catch (NumberFormatException e) {
+            return "ID must be a number.";
+        }
+    }
+
 
     private String logout() throws Exception {
         assertLoggedIn();
