@@ -9,6 +9,7 @@ import io.javalin.Javalin;
 import server.handlers.ClearHandler;
 import server.handlers.GameHandler;
 import server.handlers.UserHandler;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -30,6 +31,8 @@ public class Server {
         ClearHandler clearHandler = new ClearHandler(clearService);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+
+        javalin.ws("/ws", WebSocketHandler::new);
 
         javalin.post("/user", userHandler::register);
         javalin.post("/session", userHandler::login);
