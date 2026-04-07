@@ -32,7 +32,7 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        javalin.ws("/ws", WebSocketHandler::new);
+        javalin.ws("/ws", ws -> new WebSocketHandler(ws, authDAO, gameDAO));
 
         javalin.post("/user", userHandler::register);
         javalin.post("/session", userHandler::login);
