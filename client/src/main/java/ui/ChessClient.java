@@ -1,15 +1,19 @@
 package ui;
 
 import chess.ChessBoard;
-import com.sun.nio.sctp.HandlerResult;
-import com.sun.nio.sctp.Notification;
-import com.sun.nio.sctp.NotificationHandler;
+import chess.ChessGame;
 import model.AuthData;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static ui.BoardDrawer.drawBoard;
+import static ui.EscapeSequences.*;
 
 
 public class ChessClient implements NotificationHandler {
@@ -19,6 +23,8 @@ public class ChessClient implements NotificationHandler {
     private WebSocketCommunicator ws;
     private final int port;
     private final String serverUrl;
+    private ChessGame currentGame;
+    private boolean isWhitePerspective = true;
 
 
     private final Map<Integer, Integer> gameListItemMap = new HashMap<>();
@@ -31,7 +37,11 @@ public class ChessClient implements NotificationHandler {
     }
 
     public void notify(ServerMessage message){
-        // TODO: Implment Method
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> handleLoadGame(((LoadGameMessage) message).getGame());
+            case NOTIFICATION -> handleNotification(((NotificationMessage) message).getMessage());
+            case ERROR -> handleError(((ErrorMessage) message).getErrorMessage());
+        }
     }
 
     public String evaluateCommand(String command) {
@@ -120,12 +130,15 @@ public class ChessClient implements NotificationHandler {
         try {
             int actualGameID = gameListItemMap.get(uiID);
             String playerColor = params[1].toUpperCase();
+
+            this.isWhitePerspective = !playerColor.equalsIgnoreCase("BLACK");
+
             server.joinGame(this.authToken, playerColor, actualGameID);
 
             ChessBoard board = new ChessBoard();
             board.resetBoard();
             boolean isWhite = playerColor.equalsIgnoreCase("WHITE");
-            BoardDrawer.drawBoard(board, isWhite);
+            drawBoard(board, isWhite);
 
             String url = "http://localhost:" + this.port;
 
@@ -151,7 +164,7 @@ public class ChessClient implements NotificationHandler {
             }
             ChessBoard board = new ChessBoard();
             board.resetBoard();
-            BoardDrawer.drawBoard(board, true);
+            drawBoard(board, true);
 
             return "Observing game " + uiID;
         }
@@ -195,13 +208,35 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
-    @Override
-    public HandlerResult handleNotification(Notification notification, Object attachment) {
-        return null;
+    private void handleNotification(String notification) {
+        System.out.println(SET_TEXT_COLOR_MAGENTA + notification + RESET_TEXT_COLOR);
+        printPrompt();
+    }
+
+    private void handleError(String errorMessage) {
+        System.out.println("\n" + SET_TEXT_COLOR_RED + "!! " + errorMessage + " !!" + RESET_TEXT_COLOR);
+        printPrompt();
     }
 
     public enum State {
         LOGGED_OUT,
         LOGGED_IN
+    }
+
+    private void handleLoadGame(ChessGame game) {
+        // 1. Update your local game state
+        this.currentGame = game;
+
+        // 2. Clear the screen and draw the board (Phase 6 requirement)
+        System.out.println("\n" + SET_TEXT_COLOR_GREEN + "Current Game State:" + RESET_TEXT_COLOR);
+        drawBoard(game.getBoard(), this.isWhitePerspective);
+
+        // 3. Reprint the prompt so the user knows they can type
+        printPrompt();
+    }
+
+    private void printPrompt() {
+        String colorPrefix = isWhitePerspective ? "[WHITE]" : "[BLACK]";
+        System.out.print("\n" + colorPrefix + " >>> ");
     }
 }
