@@ -1,22 +1,37 @@
 package ui;
 
 import chess.ChessBoard;
+import com.sun.nio.sctp.HandlerResult;
+import com.sun.nio.sctp.Notification;
+import com.sun.nio.sctp.NotificationHandler;
 import model.AuthData;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler {
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
     private String authToken = null;
+    private WebSocketCommunicator ws;
+    private final int port;
+    private final String serverUrl;
+
 
     private final Map<Integer, Integer> gameListItemMap = new HashMap<>();
 
     public ChessClient(int port) {
+        this.port = port;
+        this.serverUrl = "http://localhost:" + port;
         server = new ServerFacade(port);
+
+    }
+
+    public void notify(ServerMessage message){
+        // TODO: Implment Method
     }
 
     public String evaluateCommand(String command) {
@@ -105,12 +120,17 @@ public class ChessClient {
         try {
             int actualGameID = gameListItemMap.get(uiID);
             String playerColor = params[1].toUpperCase();
-            server.joinGame(this.authToken, playerColor, gameListItemMap.get(actualGameID));
+            server.joinGame(this.authToken, playerColor, actualGameID);
 
             ChessBoard board = new ChessBoard();
             board.resetBoard();
             boolean isWhite = playerColor.equalsIgnoreCase("WHITE");
             BoardDrawer.drawBoard(board, isWhite);
+
+            String url = "http://localhost:" + this.port;
+
+            ws = new WebSocketCommunicator(serverUrl, this);
+            ws.connect(authToken, actualGameID);
 
             return "Joined game " + uiID + " as " + playerColor;
         }
@@ -173,6 +193,11 @@ public class ChessClient {
         if (state == State.LOGGED_OUT) {
             throw new Exception("You must be logged in to perform this action.");
         }
+    }
+
+    @Override
+    public HandlerResult handleNotification(Notification notification, Object attachment) {
+        return null;
     }
 
     public enum State {

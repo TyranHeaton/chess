@@ -4,35 +4,40 @@ import com.google.gson.Gson;
 import io.javalin.websocket.WsContext;
 import websocket.messages.ServerMessage;
 
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    public final Map<Integer, Set<Connection>> connections = new ConcurrentHashMap<>();
 
-    public void addConnection(String visitorName, WsContext context) {
+    public void addConnection(int gameID, String visitorName, WsContext context) {
         var connection = new Connection(visitorName, context);
-        connections.put(visitorName, connection);
+        connections.computeIfAbsent(gameID, k -> new CopyOnWriteArraySet<>()).add(connection);
     }
 
-    public void removeConnection(String visitorName) {
-        connections.remove(visitorName);
-    }
-
-    public void broadcast(String excludeVisitorName, ServerMessage notification) {
-        var cleanUp = new ArrayList<Connection>();
-
-        for (var connection : connections.values()) {
-            if (connection.context.session.isOpen()) {
-                if (!connection.visitorName.equals(excludeVisitorName)) {
-                    connection.send(new Gson().toJson(notification));
-                }
-            } else {
-                cleanUp.add(connection);
+    public void removeConnection(int gameID, String visitorName) {
+        var gameSet = connections.get(gameID);
+        if (gameSet != null) {
+            gameSet.removeIf(conn -> conn.visitorName.equals(visitorName));
+            if (gameSet.isEmpty()) {
+                connections.remove(gameID);
             }
         }
-        for (var badConnection : cleanUp) {
-            connections.remove(badConnection.visitorName);
+    }
+
+    public void broadcast(int gameID, WsContext excludeCtx, ServerMessage notification) {
+        var connectionsInGame = connections.get(gameID);
+
+        if (connectionsInGame != null) {
+            for (var connection : connectionsInGame) {
+                if (connection.context.session.isOpen()) {
+                    if (!connection.context.equals(excludeCtx)) {
+                        connection.send(new Gson().toJson(notification));
+                    }
+                }
+            }
         }
     }
 }

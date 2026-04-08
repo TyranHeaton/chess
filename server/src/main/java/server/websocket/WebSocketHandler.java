@@ -8,21 +8,19 @@ import io.javalin.websocket.WsMessageContext;
 import model.AuthData;
 import model.GameData;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 public class WebSocketHandler {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-    private final ConnectionManager connections;
+    private static final ConnectionManager connections = new ConnectionManager();
 
 
     public WebSocketHandler(WsConfig ws, AuthDAO authDAO, GameDAO gameDAO) {
         ws.onMessage(this::onMessage);
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
-        this.connections = new ConnectionManager();
     }
 
     private void onMessage(WsMessageContext ctx){
@@ -41,21 +39,24 @@ public class WebSocketHandler {
     private void connect(WsMessageContext context, String json) {
         try {
             UserGameCommand command = new Gson().fromJson(json, UserGameCommand.class);
+            System.out.println("CONNECT received for GameID: " + command.getGameID());
 
-            AuthData authToken = authDAO.get(command.getAuthToken());
+            AuthData authData = authDAO.get(command.getAuthToken());
 
-            if (authToken == null) {
+            if (authData == null) {
                 throw new Exception("Invalid auth token");
             }
+            System.out.println("User identified as: " + authData.username());
 
-            String username = authToken.username();
+            String username = authData.username();
             GameData gameData = gameDAO.get(Integer.toString(command.getGameID()));
 
             if (gameData == null) {
                 throw new Exception("Error: Game does not exist");
             }
 
-            connections.addConnection(username, context);
+            connections.addConnection(command.getGameID(), username, context);
+            System.out.println("Added " + username + " to ConnectionManager");
 
             var loadGameMessage = new LoadGameMessage(gameData.game());
             String jsonMessage = new Gson().toJson(loadGameMessage);
@@ -72,10 +73,11 @@ public class WebSocketHandler {
 
             var notification = new NotificationMessage(message);
 
-            connections.broadcast(username, notification);
+            connections.broadcast(command.getGameID(), context, notification);
 
         } catch (Exception e) {
-            context.send(new Gson().toJson(new ErrorMessage("Error: " + e.getMessage())));
+            System.out.println("DEBUG: CONNECT Error - " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
