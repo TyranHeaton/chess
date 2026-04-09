@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
@@ -7,9 +8,13 @@ import io.javalin.websocket.WsConfig;
 import io.javalin.websocket.WsMessageContext;
 import model.AuthData;
 import model.GameData;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import org.eclipse.jetty.websocket.api.annotations.*;
+
 
 public class WebSocketHandler {
     private final AuthDAO authDAO;
@@ -81,7 +86,43 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(WsMessageContext ctx, String json) { /* TODO: logic later */}
+    private void makeMove(WsMessageContext ctx, String json) {
+        try {
+            // 1. Deserialize the specific command to get the ChessMove
+            MakeMoveCommand command = new Gson().fromJson(json, MakeMoveCommand.class);
+
+            // 2. Verify the player (AuthToken -> Username)
+            String username = authDAO.get(command.getAuthToken()).username();
+            if (username == null) throw new Exception("Unauthorized");
+
+            // 3. Get the game state from the Database
+            ChessGame game = gameDAO.get(Integer.toString(command.getGameID())).game();
+            if (game == null) throw new Exception("Game not found");
+
+            // 4. Validate the Move (Check turn, move legality, etc.)
+            // game.makeMove() should throw an InvalidMoveException if illegal
+            game.makeMove(command.getMove());
+
+            // 5. Update the Database
+            gameDAO.updateGame(gameDAO.get(Integer.toString(command.getGameID())));
+
+            // 6. Broadcast LOAD_GAME to ALL clients
+            LoadGameMessage loadGame = new LoadGameMessage(game);
+            connections.broadcast(command.getGameID(), ctx, loadGame);
+
+            // 7. Broadcast NOTIFICATION to OTHERS (the move description)
+            String moveDesc = String.format("%s moved %s", username, command.getMove());
+            NotificationMessage notification = new NotificationMessage(moveDesc);
+            connections.broadcast(command.getGameID(), ctx, notification);
+
+        } catch (Exception e) {
+            // ONLY the root client receives the error
+            // Ensure the string contains the word "Error" per the spec
+            ErrorMessage error = new ErrorMessage("Error: " + e.getMessage());
+            ctx.send(new Gson().toJson(error));
+        }
+    }
     private void leave(WsMessageContext ctx, String json) { /* TODO: logic later */ }
     private void resign(WsMessageContext ctx, String json) { /* TODO: logic later */ }
+
 }
