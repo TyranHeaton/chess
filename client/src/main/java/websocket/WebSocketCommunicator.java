@@ -12,27 +12,30 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.net.URI;
 
-
+@ClientEndpoint
 public class WebSocketCommunicator extends Endpoint {
 	private Session session;
+	private final NotificationHandler notificationHandler;
 
     public WebSocketCommunicator(String url, NotificationHandler notificationHandler) throws Exception {
-        URI uri = new URI(url + "/ws");
+		this.notificationHandler = notificationHandler;
+		URI uri = new URI("ws://localhost:8080/ws");
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 		this.session = container.connectToServer(this, uri);
+	}
 
-		this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+	@OnMessage
+	public void onMessage(String message) {
+		ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
-            ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+		// Your parsing logic stays exactly the same, just in its own home
+		switch (serverMessage.getServerMessageType()) {
+			case LOAD_GAME -> serverMessage = new Gson().fromJson(message, LoadGameMessage.class);
+			case NOTIFICATION -> serverMessage = new Gson().fromJson(message, NotificationMessage.class);
+			case ERROR -> serverMessage = new Gson().fromJson(message, ErrorMessage.class);
+		}
 
-            switch (serverMessage.getServerMessageType()) {
-                case LOAD_GAME -> serverMessage = new Gson().fromJson(message, LoadGameMessage.class);
-                case NOTIFICATION -> serverMessage = new Gson().fromJson(message, NotificationMessage.class);
-                case ERROR -> serverMessage = new Gson().fromJson(message, ErrorMessage.class);
-            }
-
-            notificationHandler.notify(serverMessage);
-        });
+		notificationHandler.notify(serverMessage);
 	}
 
 	public void connect(String authToken, int gameID) throws Exception {
