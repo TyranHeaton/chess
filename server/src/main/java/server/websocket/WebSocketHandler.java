@@ -15,11 +15,15 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class WebSocketHandler {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private static final ConnectionManager connections = new ConnectionManager();
+    private final Set<Integer> resignedGames = new HashSet<>();
 
 
     public WebSocketHandler(WsConfig ws, AuthDAO authDAO, GameDAO gameDAO) {
@@ -51,6 +55,7 @@ public class WebSocketHandler {
             if (authData == null) {
                 throw new Exception("Invalid auth token");
             }
+
             System.out.println("User identified as: " + authData.username());
 
             String username = authData.username();
@@ -81,48 +86,131 @@ public class WebSocketHandler {
             connections.broadcast(command.getGameID(), context, notification);
 
         } catch (Exception e) {
-            System.out.println("DEBUG: CONNECT Error - " + e.getMessage());
-            e.printStackTrace();
+            ErrorMessage error = new ErrorMessage("Error: " + e.getMessage());
+            String jsonError = new Gson().toJson(error);
+            context.send(jsonError);
+            System.out.println("Sent error to client: " + jsonError);
         }
     }
 
     private void makeMove(WsMessageContext ctx, String json) {
         try {
-            // 1. Deserialize the specific command to get the ChessMove
             MakeMoveCommand command = new Gson().fromJson(json, MakeMoveCommand.class);
-
-            // 2. Verify the player (AuthToken -> Username)
             String username = authDAO.get(command.getAuthToken()).username();
-            if (username == null) throw new Exception("Unauthorized");
+            GameData gameData = gameDAO.get(Integer.toString(command.getGameID()));
+            ChessGame game = gameData.game();
 
-            // 3. Get the game state from the Database
-            ChessGame game = gameDAO.get(Integer.toString(command.getGameID())).game();
-            if (game == null) throw new Exception("Game not found");
+            ChessGame.TeamColor playerColor = null;
+            if (username.equals(gameData.whiteUsername())) playerColor = ChessGame.TeamColor.WHITE;
+            if (username.equals(gameData.blackUsername())) playerColor = ChessGame.TeamColor.BLACK;
+            boolean isWhite = username.equals(gameData.whiteUsername());
+            boolean isBlack = username.equals(gameData.blackUsername());
 
-            // 4. Validate the Move (Check turn, move legality, etc.)
-            // game.makeMove() should throw an InvalidMoveException if illegal
+            if (!isWhite && !isBlack) throw new Exception("Error: observers cannot make moves");
+            if (game.getTeamTurn() != playerColor) throw new Exception("Error: it is not your turn");
+            if (isGameOver(game) || resignedGames.contains(command.getGameID())) throw new Exception("Error: The game is over. No further moves are allowed.");
+
             game.makeMove(command.getMove());
+            gameDAO.updateGame(gameData);
 
-            // 5. Update the Database
-            gameDAO.updateGame(gameDAO.get(Integer.toString(command.getGameID())));
+            if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                connections.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! Black wins."));
+            } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                connections.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! White wins."));
+            } else if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                connections.broadcastToAll(command.getGameID(), new NotificationMessage("The game ended in a stalemate."));
+            } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                connections.broadcast(command.getGameID(), ctx, new NotificationMessage("White is in check!"));
+            } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                connections.broadcast(command.getGameID(), ctx, new NotificationMessage("Black is in check!"));
+            }
 
-            // 6. Broadcast LOAD_GAME to ALL clients
             LoadGameMessage loadGame = new LoadGameMessage(game);
+            String responseJson = new Gson().toJson(loadGame);
+            ctx.send(responseJson);
             connections.broadcast(command.getGameID(), ctx, loadGame);
 
-            // 7. Broadcast NOTIFICATION to OTHERS (the move description)
             String moveDesc = String.format("%s moved %s", username, command.getMove());
             NotificationMessage notification = new NotificationMessage(moveDesc);
             connections.broadcast(command.getGameID(), ctx, notification);
 
         } catch (Exception e) {
-            // ONLY the root client receives the error
-            // Ensure the string contains the word "Error" per the spec
             ErrorMessage error = new ErrorMessage("Error: " + e.getMessage());
             ctx.send(new Gson().toJson(error));
         }
+
+
     }
-    private void leave(WsMessageContext ctx, String json) { /* TODO: logic later */ }
-    private void resign(WsMessageContext ctx, String json) { /* TODO: logic later */ }
+    private void leave(WsMessageContext ctx, String json) {
+        try {
+            UserGameCommand command = new Gson().fromJson(json, UserGameCommand.class);
+
+            String username = authDAO.get(command.getAuthToken()).username();
+
+            GameData gameData = gameDAO.get(Integer.toString(command.getGameID()));
+            if (gameData != null) {
+                GameData updatedGame = removePlayerFromGame(gameData, username);
+                gameDAO.updateGame(updatedGame);
+            }
+
+            connections.removeConnection(command.getGameID(), username);
+
+            String message = String.format("%s has left the game", username);
+            NotificationMessage notification = new NotificationMessage(message);
+            connections.broadcast(command.getGameID(), ctx, notification);
+
+        } catch (Exception e) {
+            ctx.send(new Gson().toJson(new ErrorMessage("Error: " + e.getMessage())));
+        }
+    }
+
+    private GameData removePlayerFromGame(GameData gameData, String username) {
+        String white = gameData.whiteUsername();
+        String black = gameData.blackUsername();
+
+        if (username.equals(white)) {
+            white = null;
+        }
+        else if (username.equals(black)) {
+            black = null;
+        }
+
+        return new GameData(gameData.gameID(), white, black, gameData.gameName(), gameData.game());
+    }
+
+    private void resign(WsMessageContext ctx, String json) {
+        try {
+            UserGameCommand command = new Gson().fromJson(json, UserGameCommand.class);
+            String username = authDAO.get(command.getAuthToken()).username();
+            GameData gameData = gameDAO.get(Integer.toString(command.getGameID()));
+
+            if (!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
+                throw new Exception("Error: Only players can resign.");
+            }
+
+            if (resignedGames.contains(command.getGameID())) {
+                throw new Exception("Error: Cannot resign because the game is already over.");
+            }
+
+            if (gameData.game().getTeamTurn() == null) {
+                throw new Exception("Error: The game is already over.");
+            }
+
+            resignedGames.add(command.getGameID());
+
+            String msg = username + " has resigned. The game is over.";
+            connections.broadcastToAll(command.getGameID(), new NotificationMessage(msg));
+
+        } catch (Exception e) {
+            ctx.send(new Gson().toJson(new ErrorMessage("Error: " + e.getMessage())));
+        }
+    }
+
+    private boolean isGameOver(ChessGame game) {
+        return game.isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                game.isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                game.isInStalemate(ChessGame.TeamColor.WHITE) ||
+                game.isInStalemate(ChessGame.TeamColor.BLACK);
+    }
 
 }

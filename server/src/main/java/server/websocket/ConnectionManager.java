@@ -40,4 +40,15 @@ public class ConnectionManager {
             }
         }
     }
+
+    public void broadcastToAll(int gameID, ServerMessage notification) {
+        var connectionsInGame = connections.get(gameID);
+        if (connectionsInGame != null) {
+            for (var connection : connectionsInGame) {
+                if (connection.context.session.isOpen()) {
+                    connection.send(new Gson().toJson(notification));
+                }
+            }
+        }
+    }
 }
