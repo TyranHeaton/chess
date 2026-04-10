@@ -5,7 +5,6 @@ import model.UserData;
 import server.requests.LoginRequest;
 import server.requests.RegisterRequest;
 import server.results.AuthResult;
-import server.results.ErrorResult;
 import service.UserService;
 import io.javalin.http.Context;
 import exceptions.*;

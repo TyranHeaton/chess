@@ -62,7 +62,7 @@ public class WebSocketHandler {
             GameData gameData = gameDAO.get(Integer.toString(command.getGameID()));
 
             if (gameData == null) {
-                throw new Exception("Error: Game does not exist");
+                throw new Exception("Game does not exist");
             }
 
             connections.addConnection(command.getGameID(), username, context);
@@ -106,9 +106,9 @@ public class WebSocketHandler {
             boolean isWhite = username.equals(gameData.whiteUsername());
             boolean isBlack = username.equals(gameData.blackUsername());
 
-            if (!isWhite && !isBlack) throw new Exception("Error: observers cannot make moves");
-            if (game.getTeamTurn() != playerColor) throw new Exception("Error: it is not your turn");
-            if (isGameOver(game) || resignedGames.contains(command.getGameID())) throw new Exception("Error: The game is over. No further moves are allowed.");
+            if (!isWhite && !isBlack) throw new Exception("Observers cannot make moves");
+            if (game.getTeamTurn() != playerColor) throw new Exception("It is not your turn");
+            if (isGameOver(game) || resignedGames.contains(command.getGameID())) throw new Exception("The game is over. No further moves are allowed.");
 
             game.makeMove(command.getMove());
             gameDAO.updateGame(gameData);
@@ -138,9 +138,8 @@ public class WebSocketHandler {
             ErrorMessage error = new ErrorMessage("Error: " + e.getMessage());
             ctx.send(new Gson().toJson(error));
         }
-
-
     }
+
     private void leave(WsMessageContext ctx, String json) {
         try {
             UserGameCommand command = new Gson().fromJson(json, UserGameCommand.class);
@@ -185,15 +184,15 @@ public class WebSocketHandler {
             GameData gameData = gameDAO.get(Integer.toString(command.getGameID()));
 
             if (!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
-                throw new Exception("Error: Only players can resign.");
+                throw new Exception("Only players can resign.");
             }
 
             if (resignedGames.contains(command.getGameID())) {
-                throw new Exception("Error: Cannot resign because the game is already over.");
+                throw new Exception("Cannot resign because the game is already over.");
             }
 
             if (gameData.game().getTeamTurn() == null) {
-                throw new Exception("Error: The game is already over.");
+                throw new Exception("The game is already over.");
             }
 
             resignedGames.add(command.getGameID());

@@ -8,7 +8,6 @@ import exceptions.UnauthorizedException;
 import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
 import server.results.CreateGameResult;
-import server.results.ErrorResult;
 import server.results.ListGamesResult;
 import service.GameService;
 import io.javalin.http.Context;

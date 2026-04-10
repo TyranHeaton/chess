@@ -56,7 +56,7 @@ public class ChessClient implements NotificationHandler {
                 case "login" -> login(params);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-                case "play" -> joinGame(params, false);
+                case "play" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
@@ -116,7 +116,7 @@ public class ChessClient implements NotificationHandler {
         return sb.toString();
     }
 
-    private String joinGame(String[] params, boolean isObserver) throws Exception {
+    private String joinGame(String[] params) throws Exception {
         assertLoggedIn();
         if (params.length < 2) {
             throw new Exception("Expected: <ID> [WHITE|BLACK]");
@@ -140,8 +140,6 @@ public class ChessClient implements NotificationHandler {
             board.resetBoard();
             boolean isWhite = playerColor.equalsIgnoreCase("WHITE");
             drawBoard(board, isWhite);
-
-            String url = "http://localhost:" + this.port;
 
             ws = new WebSocketCommunicator(serverUrl, this);
             ws.connect(authToken, actualGameID);

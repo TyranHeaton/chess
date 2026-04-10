@@ -2,7 +2,6 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import exceptions.DataAccessException;
-import exceptions.UnauthorizedException;
 import service.ClearService;
 import io.javalin.http.Context;
 

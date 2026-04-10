@@ -15,11 +15,9 @@ import java.net.URI;
 
 public class WebSocketCommunicator extends Endpoint {
 	private Session session;
-	private NotificationHandler notificationHandler;
 
-	public WebSocketCommunicator(String url, NotificationHandler notificationHandler) throws Exception {
-		this.notificationHandler = notificationHandler;
-		URI uri = new URI(url + "/ws");
+    public WebSocketCommunicator(String url, NotificationHandler notificationHandler) throws Exception {
+        URI uri = new URI(url + "/ws");
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 		this.session = container.connectToServer(this, uri);
 
