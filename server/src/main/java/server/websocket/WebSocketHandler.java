@@ -22,7 +22,7 @@ import java.util.Set;
 public class WebSocketHandler {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-    private static final ConnectionManager connections = new ConnectionManager();
+    private static final ConnectionManager CONNECTIONS = new ConnectionManager();
     private final Set<Integer> resignedGames = new HashSet<>();
 
 
@@ -65,7 +65,7 @@ public class WebSocketHandler {
                 throw new Exception("Game does not exist");
             }
 
-            connections.addConnection(command.getGameID(), username, context);
+            CONNECTIONS.addConnection(command.getGameID(), username, context);
             System.out.println("Added " + username + " to ConnectionManager");
 
             var loadGameMessage = new LoadGameMessage(gameData.game());
@@ -83,7 +83,7 @@ public class WebSocketHandler {
 
             var notification = new NotificationMessage(message);
 
-            connections.broadcast(command.getGameID(), context, notification);
+            CONNECTIONS.broadcast(command.getGameID(), context, notification);
 
         } catch (Exception e) {
             ErrorMessage error = new ErrorMessage("Error: " + e.getMessage());
@@ -101,38 +101,40 @@ public class WebSocketHandler {
             ChessGame game = gameData.game();
 
             ChessGame.TeamColor playerColor = null;
-            if (username.equals(gameData.whiteUsername())) playerColor = ChessGame.TeamColor.WHITE;
-            if (username.equals(gameData.blackUsername())) playerColor = ChessGame.TeamColor.BLACK;
+            if (username.equals(gameData.whiteUsername())) { playerColor = ChessGame.TeamColor.WHITE; }
+            if (username.equals(gameData.blackUsername())) { playerColor = ChessGame.TeamColor.BLACK; }
             boolean isWhite = username.equals(gameData.whiteUsername());
             boolean isBlack = username.equals(gameData.blackUsername());
 
-            if (!isWhite && !isBlack) throw new Exception("Observers cannot make moves");
-            if (game.getTeamTurn() != playerColor) throw new Exception("It is not your turn");
-            if (isGameOver(game) || resignedGames.contains(command.getGameID())) throw new Exception("The game is over. No further moves are allowed.");
+            if (!isWhite && !isBlack) { throw new Exception("Observers cannot make moves"); }
+            if (game.getTeamTurn() != playerColor) { throw new Exception("It is not your turn"); }
+            if (isGameOver(game) || resignedGames.contains(command.getGameID())) {
+                throw new Exception("The game is over. No further moves are allowed.");
+            }
 
             game.makeMove(command.getMove());
             gameDAO.updateGame(gameData);
 
             if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                connections.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! Black wins."));
+                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! Black wins."));
             } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                connections.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! White wins."));
+                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! White wins."));
             } else if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                connections.broadcastToAll(command.getGameID(), new NotificationMessage("The game ended in a stalemate."));
+                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage("The game ended in a stalemate."));
             } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                connections.broadcast(command.getGameID(), ctx, new NotificationMessage("White is in check!"));
+                CONNECTIONS.broadcast(command.getGameID(), ctx, new NotificationMessage("White is in check!"));
             } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                connections.broadcast(command.getGameID(), ctx, new NotificationMessage("Black is in check!"));
+                CONNECTIONS.broadcast(command.getGameID(), ctx, new NotificationMessage("Black is in check!"));
             }
 
             LoadGameMessage loadGame = new LoadGameMessage(game);
             String responseJson = new Gson().toJson(loadGame);
             ctx.send(responseJson);
-            connections.broadcast(command.getGameID(), ctx, loadGame);
+            CONNECTIONS.broadcast(command.getGameID(), ctx, loadGame);
 
             String moveDesc = String.format("%s moved %s", username, command.getMove());
             NotificationMessage notification = new NotificationMessage(moveDesc);
-            connections.broadcast(command.getGameID(), ctx, notification);
+            CONNECTIONS.broadcast(command.getGameID(), ctx, notification);
 
         } catch (Exception e) {
             ErrorMessage error = new ErrorMessage("Error: " + e.getMessage());
@@ -152,11 +154,11 @@ public class WebSocketHandler {
                 gameDAO.updateGame(updatedGame);
             }
 
-            connections.removeConnection(command.getGameID(), username);
+            CONNECTIONS.removeConnection(command.getGameID(), username);
 
             String message = String.format("%s has left the game", username);
             NotificationMessage notification = new NotificationMessage(message);
-            connections.broadcast(command.getGameID(), ctx, notification);
+            CONNECTIONS.broadcast(command.getGameID(), ctx, notification);
 
         } catch (Exception e) {
             ctx.send(new Gson().toJson(new ErrorMessage("Error: " + e.getMessage())));
@@ -198,7 +200,7 @@ public class WebSocketHandler {
             resignedGames.add(command.getGameID());
 
             String msg = username + " has resigned. The game is over.";
-            connections.broadcastToAll(command.getGameID(), new NotificationMessage(msg));
+            CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage(msg));
 
         } catch (Exception e) {
             ctx.send(new Gson().toJson(new ErrorMessage("Error: " + e.getMessage())));
