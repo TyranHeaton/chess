@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class Repl {
     private final ChessClient client;
 
-    public Repl(int port) {
-        client = new ChessClient(port);
+    public Repl(int port) throws Exception {
+        client = new ChessClient();
     }
 
 
@@ -14,7 +14,6 @@ public class Repl {
         System.out.println("Welcome to chess! Type 'help' to get started.");
 
         Scanner scanner = new Scanner(System.in);
-        String result = "";
 
         while(true) {
             String status = "(" + client.getState() + ")";

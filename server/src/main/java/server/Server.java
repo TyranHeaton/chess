@@ -30,7 +30,13 @@ public class Server {
         GameHandler gameHandler = new GameHandler(gameService);
         ClearHandler clearHandler = new ClearHandler(clearService);
 
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+
+            config.jetty.modifyWebSocketServletFactory(factory -> {
+                factory.setIdleTimeout(java.time.Duration.ofHours(1));
+            });
+        });
 
         javalin.ws("/ws", ws -> new WebSocketHandler(ws, authDAO, gameDAO));
 

@@ -133,7 +133,7 @@ public class WebSocketHandler {
             ctx.send(responseJson);
             CONNECTIONS.broadcast(command.getGameID(), ctx, loadGame);
 
-            String moveDesc = String.format("%s moved %s", username, command.getMove());
+            String moveDesc = String.format("%s moved.", username);
             NotificationMessage notification = new NotificationMessage(moveDesc);
             CONNECTIONS.broadcast(command.getGameID(), ctx, notification);
 

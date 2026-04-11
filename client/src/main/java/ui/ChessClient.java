@@ -2,6 +2,8 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.AuthData;
 import websocket.WebSocketCommunicator;
 import websocket.messages.ErrorMessage;
@@ -9,9 +11,7 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static ui.BoardDrawer.drawBoard;
 import static ui.EscapeSequences.*;
@@ -21,20 +21,20 @@ public class ChessClient implements NotificationHandler {
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
     private String authToken = null;
-    private WebSocketCommunicator ws;
-    private final int port;
-    private final String serverUrl;
-    private ChessGame currentGame;
     private boolean isWhitePerspective = true;
+    private WebSocketCommunicator ws;
+    private NotificationHandler notificationHandler;
+    private Integer gameID;
+    private final Scanner scanner = new Scanner(System.in);
+    private ChessGame currentGame;
+    private ChessGame.TeamColor playerColor;
 
 
     private final Map<Integer, Integer> gameListItemMap = new HashMap<>();
 
-    public ChessClient(int port) {
-        this.port = port;
-        this.serverUrl = "http://localhost:" + port;
+    public ChessClient()  {
+        int port = 8080;
         server = new ServerFacade(port);
-
     }
 
     public void notify(ServerMessage message){
@@ -46,8 +46,12 @@ public class ChessClient implements NotificationHandler {
     }
 
     public String evaluateCommand(String command) {
+        if (command == null || command.trim().isEmpty()) {
+            return help();
+        }
+
         try {
-            var parts = command.split(" ");
+            var parts = command.trim().split("\\s+");
             var cmd = parts[0].toLowerCase();
             var params = Arrays.copyOfRange(parts, 1, parts.length);
 
@@ -60,6 +64,11 @@ public class ChessClient implements NotificationHandler {
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
+                case "move" -> move(params);
+                case "leave" -> leave();
+                case "resign" -> resign();
+                case "redraw" -> redraw();
+                case "highlight" -> highlight(params);
                 default -> help();
             };
 
@@ -122,27 +131,36 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Expected: <ID> [WHITE|BLACK]");
         }
 
-        int uiID = Integer.parseInt(params[0]);
-
-        if (!gameListItemMap.containsKey(uiID)) {
-            throw new Exception("Please use list to see valid game IDs before trying to join.");
-        }
-
         try {
+            int uiID = Integer.parseInt(params[0]);
+
+            if (!gameListItemMap.containsKey(uiID)) {
+                throw new Exception("Please use list to see valid game IDs before trying to join.");
+            }
+
+            if (this.ws != null) {
+                return "You are already in a game. Please 'leave' before joining another.";
+            }
+
             int actualGameID = gameListItemMap.get(uiID);
-            String playerColor = params[1].toUpperCase();
+            this.gameID = actualGameID;
 
-            this.isWhitePerspective = !playerColor.equalsIgnoreCase("BLACK");
+            String colorParam = params[1].toUpperCase();
 
-            server.joinGame(this.authToken, playerColor, actualGameID);
+            this.playerColor = colorParam.equals("BLACK") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+            this.isWhitePerspective = (this.playerColor == ChessGame.TeamColor.WHITE);
+
+            server.joinGame(this.authToken, colorParam, actualGameID);
 
             ChessBoard board = new ChessBoard();
             board.resetBoard();
-            boolean isWhite = playerColor.equalsIgnoreCase("WHITE");
+            boolean isWhite = colorParam.equalsIgnoreCase("WHITE");
             drawBoard(board, isWhite);
 
-            ws = new WebSocketCommunicator(serverUrl, this);
-            ws.connect(authToken, actualGameID);
+            this.ws = new WebSocketCommunicator(this);
+            this.ws.connect(authToken, actualGameID);
+
+            this.state = State.INGAME;
 
             return "Joined game " + uiID + " as " + playerColor;
         }
@@ -157,6 +175,14 @@ public class ChessClient implements NotificationHandler {
         }
         try {
             int uiID = Integer.parseInt(params[0]);
+            int actualGameID = gameListItemMap.get(uiID);
+            this.gameID = actualGameID;
+
+            this.playerColor = null;
+            this.isWhitePerspective = true;
+            this.ws = new WebSocketCommunicator(this);
+            this.ws.connect(authToken, actualGameID);
+            this.state = State.INGAME;
 
             if (!gameListItemMap.containsKey(uiID)) {
                 return "Please use list to see valid game IDs before trying to observe.";
@@ -164,6 +190,8 @@ public class ChessClient implements NotificationHandler {
             ChessBoard board = new ChessBoard();
             board.resetBoard();
             drawBoard(board, true);
+
+            this.state = State.INGAME;
 
             return "Observing game " + uiID;
         }
@@ -180,6 +208,85 @@ public class ChessClient implements NotificationHandler {
         return "Logged out successfully.";
     }
 
+    private String move(String[] params) throws Exception {
+        assertInGame();
+        if (params.length < 2) {
+            throw new Exception("Expected: <FROM> <TO>");
+        }
+        ChessPosition start = parsePosition(params[0]);
+        ChessPosition end = parsePosition(params[1]);
+
+        if (start == null || end == null) {
+            throw new Exception("Invalid position format. Use format like e2 or d7.");
+        }
+
+        ChessMove move = new ChessMove(start, end, null);
+
+        System.out.println("DEBUG: Current ws object hash: " + System.identityHashCode(ws));
+        ws.makeMove(authToken, gameID, move);
+        return "Move sent.";
+    }
+
+    private String leave() throws Exception {
+        assertInGame();
+
+        if (ws != null) {
+            ws.leaveGame(authToken, gameID);
+            this.ws = null;
+        }
+
+        this.state = State.LOGGED_IN;
+        this.currentGame = null;
+        this.gameID = null;
+        this.playerColor = null;
+
+        return "Left the game. Returning to Post-Login menu...";
+    }
+
+    private String resign() throws Exception {
+        assertInGame();
+        System.out.print("Are you sure you want to resign? (yes/no): ");
+        String confirmation = scanner.next().toLowerCase();
+
+        if (confirmation.equals("yes")) {
+            ws.resign(authToken, gameID);
+            return "Resigning from the game...";
+        } else {
+            return "Resignation cancelled.";
+        }
+    }
+
+    private String redraw() throws Exception {
+        assertInGame();
+        if (currentGame == null) {
+            throw new Exception("No game state to redraw.");
+        }
+        assertLoggedIn();
+        boolean isWhitePerspective = (playerColor == ChessGame.TeamColor.WHITE || playerColor == null);
+        drawBoard(currentGame.getBoard(), isWhitePerspective);
+        return "Board redrawn.";
+    }
+
+    private String highlight(String[] params) throws Exception {
+        assertInGame();
+        if (params.length < 1) {
+            throw new Exception("Expected: highlight <POSITION> (e.g. highlight e2)");
+        }
+
+        ChessPosition startPos = parsePosition(params[0]);
+
+        Collection<ChessMove> validMoves = currentGame.validMoves(startPos);
+
+        if (validMoves == null || validMoves.isEmpty()) {
+            return "No legal moves for the piece at " + params[0];
+        }
+
+        boolean isWhite = (playerColor == ChessGame.TeamColor.WHITE || playerColor == null);
+        BoardDrawer.drawBoard(currentGame.getBoard(), isWhite);
+
+        return "Showing legal moves for " + params[0];
+    }
+
 
     public String help() {
         if (state == State.LOGGED_OUT) {
@@ -190,15 +297,43 @@ public class ChessClient implements NotificationHandler {
                     help - with possible commands
                     """;
         }
-        return """
-            create <NAME> - a game
-            list - games
-            play <ID> [WHITE|BLACK] - a game
-            observe <ID> - a game
-            logout - when you are done
-            quit - playing chess
-            help - with possible commands
-            """;
+        if (state == State.LOGGED_IN) {
+            return """
+                    create <NAME> - a game
+                    list - games
+                    play <ID> [WHITE|BLACK] - a game
+                    observe <ID> - a game
+                    logout - when you are done
+                    quit - playing chess
+                    help - with possible commands
+                    """;
+        }
+        else {
+            return """
+                    move <FROM> <TO> - to make a move (e.g. move e2 e4)
+                    highlight <POSITION> - to show legal moves for a piece (e.g. highlight e2)
+                    redraw - to redraw the board
+                    leave - to leave the game and return to the post-login menu
+                    resign - to resign from the game
+                    quit - playing chess
+                    help - with possible commands
+                    """;
+        }
+    }
+
+    private ChessPosition parsePosition(String pos) {
+        try {
+            if (pos == null || pos.length() != 2) return null;
+            char file = Character.toLowerCase(pos.charAt(0));
+            char rank = pos.charAt(1);
+            if (file < 'a' || file > 'h' || rank < '1' || rank > '8') return null;
+            int col = file - 'a' + 1;
+            int row = rank - '0';
+            return new ChessPosition(row, col);
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     private void assertLoggedIn() throws Exception {
@@ -219,23 +354,30 @@ public class ChessClient implements NotificationHandler {
 
     public enum State {
         LOGGED_OUT,
-        LOGGED_IN
+        LOGGED_IN,
+        INGAME
     }
 
     private void handleLoadGame(ChessGame game) {
-        // 1. Update your local game state
         this.currentGame = game;
-
-        // 2. Clear the screen and draw the board (Phase 6 requirement)
         System.out.println("\n" + SET_TEXT_COLOR_GREEN + "Current Game State:" + RESET_TEXT_COLOR);
         drawBoard(game.getBoard(), this.isWhitePerspective);
-
-        // 3. Reprint the prompt so the user knows they can type
         printPrompt();
+        System.out.println("DEBUG: Object Hash in handleLoadGame: " + System.identityHashCode(this.ws));
     }
 
     private void printPrompt() {
         String colorPrefix = isWhitePerspective ? "[WHITE]" : "[BLACK]";
         System.out.print("\n" + colorPrefix + " >>> ");
     }
+
+    private void assertInGame() throws Exception {
+        if (state != State.INGAME) {
+            throw new Exception("You must be in a game to perform this action.");
+        }
+        if (ws == null || gameID == null) {
+            throw new Exception("No active game connection.");
+        }
+    }
+
 }
