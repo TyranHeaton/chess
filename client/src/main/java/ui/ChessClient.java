@@ -12,8 +12,8 @@ import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static ui.BoardDrawer.drawBoard;
 import static ui.EscapeSequences.*;
 
 
@@ -28,7 +28,7 @@ public class ChessClient implements NotificationHandler {
     private final Scanner scanner = new Scanner(System.in);
     private ChessGame currentGame;
     private ChessGame.TeamColor playerColor;
-
+    private final BoardDrawer drawer = new BoardDrawer();
 
     private final Map<Integer, Integer> gameListItemMap = new HashMap<>();
 
@@ -155,7 +155,7 @@ public class ChessClient implements NotificationHandler {
             ChessBoard board = new ChessBoard();
             board.resetBoard();
             boolean isWhite = colorParam.equalsIgnoreCase("WHITE");
-            drawBoard(board, isWhite);
+            drawer.drawBoard(board, isWhite);
 
             this.ws = new WebSocketCommunicator(this);
             this.ws.connect(authToken, actualGameID);
@@ -189,7 +189,7 @@ public class ChessClient implements NotificationHandler {
             }
             ChessBoard board = new ChessBoard();
             board.resetBoard();
-            drawBoard(board, true);
+            drawer.drawBoard(board, true);
 
             this.state = State.INGAME;
 
@@ -222,7 +222,6 @@ public class ChessClient implements NotificationHandler {
 
         ChessMove move = new ChessMove(start, end, null);
 
-        System.out.println("DEBUG: Current ws object hash: " + System.identityHashCode(ws));
         ws.makeMove(authToken, gameID, move);
         return "Move sent.";
     }
@@ -263,7 +262,7 @@ public class ChessClient implements NotificationHandler {
         }
         assertLoggedIn();
         boolean isWhitePerspective = (playerColor == ChessGame.TeamColor.WHITE || playerColor == null);
-        drawBoard(currentGame.getBoard(), isWhitePerspective);
+        drawer.drawBoard(currentGame.getBoard(), isWhitePerspective);
         return "Board redrawn.";
     }
 
@@ -281,8 +280,12 @@ public class ChessClient implements NotificationHandler {
             return "No legal moves for the piece at " + params[0];
         }
 
+        Set<ChessPosition> highlightPositions = validMoves.stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
+
+        highlightPositions.add(startPos);
+
         boolean isWhite = (playerColor == ChessGame.TeamColor.WHITE || playerColor == null);
-        BoardDrawer.drawBoard(currentGame.getBoard(), isWhite);
+        drawer.drawBoard(currentGame.getBoard(), isWhite, highlightPositions);
 
         return "Showing legal moves for " + params[0];
     }
@@ -361,9 +364,8 @@ public class ChessClient implements NotificationHandler {
     private void handleLoadGame(ChessGame game) {
         this.currentGame = game;
         System.out.println("\n" + SET_TEXT_COLOR_GREEN + "Current Game State:" + RESET_TEXT_COLOR);
-        drawBoard(game.getBoard(), this.isWhitePerspective);
+        drawer.drawBoard(game.getBoard(), this.isWhitePerspective);
         printPrompt();
-        System.out.println("DEBUG: Object Hash in handleLoadGame: " + System.identityHashCode(this.ws));
     }
 
     private void printPrompt() {

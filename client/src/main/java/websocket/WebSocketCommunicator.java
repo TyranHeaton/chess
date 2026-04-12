@@ -76,10 +76,6 @@ public class WebSocketCommunicator {
 	}
 
 	public void send(UserGameCommand command) throws IOException {
-		System.out.println("DEBUG: Attempting to send. Session is null? " + (session == null));
-		if (session != null) {
-			System.out.println("DEBUG: Session Open? " + session.isOpen());
-		}
 		if (this.session == null || !this.session.isOpen()) {
 			throw new IOException("WebSocket is not connected.");
 		}
@@ -97,8 +93,6 @@ public class WebSocketCommunicator {
 
 	@OnClose
 	public void onClose(Session session, CloseReason closeReason) {
-		System.out.println("DEBUG: WebSocket Closed. Reason: " + closeReason.getReasonPhrase());
-		System.out.println("DEBUG: Code: " + closeReason.getCloseCode());
 		this.session = null;
 	}
 

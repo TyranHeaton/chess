@@ -93,7 +93,6 @@ public class Server {
 
         } catch (Exception e) {
             System.out.println("SERVER DEBUG: Database setup FAILED!");
-            e.printStackTrace();
         }
         javalin.start(desiredPort);
         return javalin.port();
