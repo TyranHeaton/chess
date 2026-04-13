@@ -117,15 +117,19 @@ public class WebSocketHandler {
             gameDAO.updateGame(gameData);
 
             if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! Black wins."));
+                String victimName = gameData.whiteUsername();
+                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage(victimName + " is in checkmate! Black wins."));
             } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage("Checkmate! White wins."));
+                String victimName = gameData.blackUsername();
+                CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage(victimName + " is in checkmate! White wins."));
             } else if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
                 CONNECTIONS.broadcastToAll(command.getGameID(), new NotificationMessage("The game ended in a stalemate."));
             } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                CONNECTIONS.broadcast(command.getGameID(), ctx, new NotificationMessage("White is in check!"));
+                String victimName = gameData.whiteUsername();
+                CONNECTIONS.broadcast(command.getGameID(), ctx, new NotificationMessage(victimName + " is in check!"));
             } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                CONNECTIONS.broadcast(command.getGameID(), ctx, new NotificationMessage("Black is in check!"));
+                String victimName = gameData.blackUsername();
+                CONNECTIONS.broadcast(command.getGameID(), ctx, new NotificationMessage(victimName + " is in check!"));
             }
 
             LoadGameMessage loadGame = new LoadGameMessage(game);
@@ -133,7 +137,7 @@ public class WebSocketHandler {
             ctx.send(responseJson);
             CONNECTIONS.broadcast(command.getGameID(), ctx, loadGame);
 
-            String moveDesc = String.format("%s moved.", username);
+            String moveDesc = String.format("%s moved from %s to %s.", username, command.getMove().getStartPosition(), command.getMove().getEndPosition());
             NotificationMessage notification = new NotificationMessage(moveDesc);
             CONNECTIONS.broadcast(command.getGameID(), ctx, notification);
 

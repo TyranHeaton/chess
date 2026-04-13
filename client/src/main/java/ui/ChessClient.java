@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import model.AuthData;
 import websocket.WebSocketCommunicator;
 import websocket.messages.ErrorMessage;
@@ -220,10 +217,31 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Invalid position format. Use format like e2 or d7.");
         }
 
-        ChessMove move = new ChessMove(start, end, null);
+        ChessPiece piece = currentGame.getBoard().getPiece(start);
+        boolean isPromotion = false;
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if ((playerColor == ChessGame.TeamColor.WHITE && end.getRow() == 8) || (playerColor == ChessGame.TeamColor.BLACK && end.getRow() == 1)) {
+                isPromotion = true;
+            }
+        }
 
+        ChessPiece.PieceType promotionPiece = null;
+        if (isPromotion) {
+            System.out.print("Your pawn has been promoted! Choose a piece (Q/R/B/N): ");
+            String choice = scanner.nextLine().toUpperCase();
+            promotionPiece = switch (choice) {
+                case "Q" -> ChessPiece.PieceType.QUEEN;
+                case "R" -> ChessPiece.PieceType.ROOK;
+                case "B" -> ChessPiece.PieceType.BISHOP;
+                case "N" -> ChessPiece.PieceType.KNIGHT;
+                default -> throw new Exception("Invalid.");
+            };
+        }
+        ChessMove move = new ChessMove(start, end, promotionPiece);
         ws.makeMove(authToken, gameID, move);
+
         return "Move sent.";
+
     }
 
     private String leave() throws Exception {
@@ -268,26 +286,32 @@ public class ChessClient implements NotificationHandler {
 
     private String highlight(String[] params) throws Exception {
         assertInGame();
-        if (params.length < 1) {
+
+        try {
+            if (params.length < 1) {
+                throw new Exception("Expected: highlight <POSITION> (e.g. highlight e2)");
+            }
+
+            ChessPosition startPos = parsePosition(params[0]);
+
+            Collection<ChessMove> validMoves = currentGame.validMoves(startPos);
+
+            if (validMoves == null || validMoves.isEmpty()) {
+                return "No legal moves for the piece at " + params[0];
+            }
+
+            Set<ChessPosition> highlightPositions = validMoves.stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
+
+            highlightPositions.add(startPos);
+
+            boolean isWhite = (playerColor == ChessGame.TeamColor.WHITE || playerColor == null);
+            drawer.drawBoard(currentGame.getBoard(), isWhite, highlightPositions);
+
+            return "Showing legal moves for " + params[0];
+        }
+        catch (Exception e) {
             throw new Exception("Expected: highlight <POSITION> (e.g. highlight e2)");
         }
-
-        ChessPosition startPos = parsePosition(params[0]);
-
-        Collection<ChessMove> validMoves = currentGame.validMoves(startPos);
-
-        if (validMoves == null || validMoves.isEmpty()) {
-            return "No legal moves for the piece at " + params[0];
-        }
-
-        Set<ChessPosition> highlightPositions = validMoves.stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
-
-        highlightPositions.add(startPos);
-
-        boolean isWhite = (playerColor == ChessGame.TeamColor.WHITE || playerColor == null);
-        drawer.drawBoard(currentGame.getBoard(), isWhite, highlightPositions);
-
-        return "Showing legal moves for " + params[0];
     }
 
 

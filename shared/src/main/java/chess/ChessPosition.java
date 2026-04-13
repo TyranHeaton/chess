@@ -47,7 +47,8 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "(" + row + "," + col + ")";
+        char columnLetter = (char) ('a' + (this.col - 1));
+        return "" + columnLetter + this.row;
     }
 }
 
